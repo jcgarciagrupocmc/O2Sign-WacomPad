@@ -1,0 +1,21 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="WacomWebSocketService.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="host" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">http://172.26.0.157:8080/BioSign/rest/signservices</Value>
+    </Setting>
+    <Setting Name="tempPath" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">.\\temp\\</Value>
+    </Setting>
+    <Setting Name="tsaUrl" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">http://212.166.79.227/ts.inx</Value>
+    </Setting>
+    <Setting Name="tsaUser" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">UsuarioInicial</Value>
+    </Setting>
+    <Setting Name="tsaPass" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">CamaraInicial14</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
