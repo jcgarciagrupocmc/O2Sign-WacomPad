@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WacomWebSocketService.Entities
 {
-    class DocumentData
+    public class DocumentData
     {
         private int uuid;
 
@@ -49,6 +49,14 @@ namespace WacomWebSocketService.Entities
         {
             get { return idoperation; }
             set { idoperation = value; }
+        }
+
+        private String docsignedpath;
+
+        public String Docsignedpath
+        {
+            get { return docsignedpath; }
+            set { docsignedpath = value; }
         }
     }
 }

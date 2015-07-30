@@ -17,3 +17,7 @@ C:\Projects\CaserFirma\WacomWebSocketService\WacomWebSocketService\bin\Debug\New
 C:\Projects\CaserFirma\WacomWebSocketService\WacomWebSocketService\bin\Debug\RestSharp.xml
 C:\Projects\CaserFirma\WacomWebSocketService\WacomWebSocketService\obj\Debug\WacomWebSocketService.exe
 C:\Projects\CaserFirma\WacomWebSocketService\WacomWebSocketService\obj\Debug\WacomWebSocketService.pdb
+C:\Projects\CaserFirma\WacomWebSocketService\WacomWebSocketService\bin\Debug\Interop.wgssSTU.dll
+C:\Projects\CaserFirma\WacomWebSocketService\WacomWebSocketService\obj\Debug\WacomWebSocketService.WacomPad.WacomPadForm.resources
+C:\Projects\CaserFirma\WacomWebSocketService\WacomWebSocketService\obj\Debug\WacomWebSocketService.csproj.GenerateResource.Cache
+C:\Projects\CaserFirma\WacomWebSocketService\WacomWebSocketService\obj\Debug\WacomWebSocketService.UI.PdfListUI.resources

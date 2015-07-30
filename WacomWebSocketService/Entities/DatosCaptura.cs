@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WacomWebSocketService.Entities
 {
-    class DatosCaptura
+    public class DatosCaptura
     {
         private int uuid;
 

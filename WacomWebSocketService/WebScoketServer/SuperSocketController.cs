@@ -14,16 +14,18 @@ using SuperWebSocket;
 
 namespace WacomWebSocketService.WebScoketServer
 {
-    class SuperSocketController
+    public class SuperSocketController
     {
         private WebSocketServer appServer;
+        private Control.Logic logic;
 
         /**
          * 
          * 
          */
-        public SuperSocketController(int port)
+        public SuperSocketController(Control.Logic pLogic, int port)
         {
+            this.logic = pLogic;
             ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
             if (port == 0)
                 port = 82;
@@ -44,8 +46,9 @@ namespace WacomWebSocketService.WebScoketServer
          * 
          * 
          */
-        public SuperSocketController()
+        public SuperSocketController(Control.Logic pLogic)
         {
+            this.logic = pLogic;
             int port;
             ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
             port = 82;
@@ -115,13 +118,45 @@ namespace WacomWebSocketService.WebScoketServer
         {
             try
             {
-                WebSocketMC  mc = new WebSocketMC();
-                session.Send(mc.recieveMessage(message));                
+                //WebSocketMC  mc = new WebSocketMC();
+                //session.Send(mc.recieveMessage(message));
+                session.Send(this.logic.recieveWebSMessage(message));
             }
             catch (IncorrectMessageException ex)
             {
                 session.Send(ex.response);
             }
         }
+        /**
+         * 
+         */
+        public Response createRegisterResponse()
+        {
+            return new Response { Type = ResponseType.Connection };
+        }
+        /**
+         * 
+         */
+        public Response createErrorResponse(String s)
+        {
+            return new Response { Type = ResponseType.Error, Data = new { s } };
+        }
+
+        /**
+         * 
+         */
+        public Response createErrorResponse()
+        {
+            return new Response { Type = ResponseType.Error };
+        }
+
+        /**
+         * 
+         */
+        public Response createOperationOKResponse(String s)
+        {
+            return new Response { Type = ResponseType.DataRecieved, Data = s };
+        }
+
     }
 }

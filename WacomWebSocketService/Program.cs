@@ -5,6 +5,7 @@ using System.ServiceProcess;
 using System.Text;
 using System.Threading.Tasks;
 using WacomWebSocketService.WebScoketServer;
+using WacomWebSocketService.Control;
 
 namespace WacomWebSocketService
 {
@@ -16,12 +17,17 @@ namespace WacomWebSocketService
         static void Main()
         {
             System.IO.Directory.SetCurrentDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
-            SuperSocketController ssController = new SuperSocketController();
-            ssController.open();
-            while (true)
-            {
-                continue;
-            }
+            Logic logic = new Logic();
+            Test.SinWebSocket test = new Test.SinWebSocket(logic);
+            //test.getJsonOperation("1");
+            test.signPDF();
+            //logic.onStart();
+            //SuperSocketController ssController = new SuperSocketController();
+            //ssController.open();
+            //while (true)
+            //{
+            //    continue;
+            //}
             //ServiceBase[] ServicesToRun;
             //ServicesToRun = new ServiceBase[] 
             //{ 

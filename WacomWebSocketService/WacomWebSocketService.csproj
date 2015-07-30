@@ -33,6 +33,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Interop.wgssSTU">
+      <HintPath>..\..\..\WacomSDKSamples\STU-SDK-Samples\csharp\DemoButtons (save option)\Interop.wgssSTU.dll</HintPath>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+      <Aliases>global</Aliases>
+    </Reference>
     <Reference Include="itextsharp">
       <HintPath>..\packages\iTextSharp.5.5.6\lib\itextsharp.dll</HintPath>
     </Reference>
@@ -64,6 +69,8 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -82,12 +89,14 @@
     <Compile Include="DocumentRecieverService.Designer.cs">
       <DependentUpon>DocumentRecieverService.cs</DependentUpon>
     </Compile>
+    <Compile Include="Entities\BioSignPoint.cs" />
     <Compile Include="Entities\GraphSign.cs" />
     <Compile Include="Entities\DatosCaptura.cs" />
     <Compile Include="Entities\DocumentData.cs" />
     <Compile Include="Exceptions\IncorrectMessageException.cs" />
     <Compile Include="JSONMessageConverter\MessageConverter.cs" />
     <Compile Include="JSONMessageConverter\WebSocketMC.cs" />
+    <Compile Include="PDF\DigitalSignUtils.cs" />
     <Compile Include="PDF\PDFController.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -96,13 +105,29 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="Test\SinWebSocket.cs" />
+    <Compile Include="UI\PdfListUI.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\PdfListUI.Designer.cs">
+      <DependentUpon>PdfListUI.cs</DependentUpon>
+    </Compile>
     <Compile Include="WacomPad\WacomPadController.cs" />
+    <Compile Include="WacomPad\WacomPadForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="WacomPad\WacomPadForm.Designer.cs">
+      <DependentUpon>WacomPadForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WacomPad\WacomPadUtils.cs" />
     <Compile Include="WebScoketServer\Response.cs" />
     <Compile Include="WebScoketServer\SuperSocketController.cs" />
-    <Compile Include="WSClient\PieWSClient.cs" />
+    <Compile Include="WSClient\RestController.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="certificate\11944524-caser.firma.es.cert" />
+    <None Include="certificate\11944524-caser.firma.es.key" />
     <None Include="log4net.config" />
     <None Include="log4net.unix.config" />
     <None Include="packages.config" />
@@ -114,15 +139,12 @@
     <None Include="supersocket.sh" />
   </ItemGroup>
   <ItemGroup>
-    <COMReference Include="wgssSTU">
-      <Guid>{20007867-2524-410F-A904-CF6A6A976D89}</Guid>
-      <VersionMajor>2</VersionMajor>
-      <VersionMinor>2</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </COMReference>
+    <EmbeddedResource Include="UI\PdfListUI.resx">
+      <DependentUpon>PdfListUI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WacomPad\WacomPadForm.resx">
+      <DependentUpon>WacomPadForm.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

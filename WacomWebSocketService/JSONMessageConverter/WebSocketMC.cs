@@ -19,9 +19,8 @@ namespace WacomWebSocketService.JSONMessageConverter
             ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
             try
             {
-                // <3 dynamics
                 Response r;
-                PieWSClient ws;
+                RestController ws;
                 dynamic obj = JsonConvert.DeserializeObject(message);
                 Console.Out.WriteLine(message);
                 switch ((int)obj.Type)
@@ -30,7 +29,7 @@ namespace WacomWebSocketService.JSONMessageConverter
                         r = new Response { Type = ResponseType.Connection };
                         return JsonConvert.SerializeObject(r);
                     case (int)CommandType.GetOperation:
-                        ws = new PieWSClient(Properties.Settings.Default.host);
+                        ws = new RestController(Properties.Settings.Default.host);
                         if (obj.idFile != null)
                         {
                             String url = String.Format(WSMethods.GET_DOCS_BY_OPERATION, obj.idFile);
@@ -49,7 +48,7 @@ namespace WacomWebSocketService.JSONMessageConverter
                         return JsonConvert.SerializeObject(r);
 
                     case (int)CommandType.GetFile:
-                        ws = new PieWSClient(Properties.Settings.Default.host);
+                        ws = new RestController(Properties.Settings.Default.host);
                         if (obj.idFile != null)
                         {
                             String url = String.Format(WSMethods.GET_PDF_BY_ID, obj.idFile);

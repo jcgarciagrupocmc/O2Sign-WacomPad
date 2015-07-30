@@ -8,27 +8,38 @@ using iTextSharp.text;
 using System.IO;
 using WacomWebSocketService.Entities;
 using iTextSharp.text.pdf.security;
+using log4net;
 
 namespace WacomWebSocketService.PDF
 {
-    class PDFController
+    public class PDFController
     {
         private PdfWriter writer;
+        private PdfReader reader;
         private FileStream fos;
         private Document doc;
+        private ILog Log;
 
+
+        public PDFController()
+        {
+            this.Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        }
         /**
          * @Method open a existing pdf file
          * @Param path path of pdfFile
          * @Return returns true if the file was opened or false if file couldn't be opened
          */
-        private bool open(String path)
+        private bool open(DocumentData pdfDoc)
         {
-            if (File.Exists(path))
+            if (File.Exists(pdfDoc.Docpath))
             {
                 doc = new Document();
-                fos = new FileStream(path, FileMode.Open);
+                reader = new PdfReader(pdfDoc.Docpath);
+                fos = new FileStream(pdfDoc.Docsignedpath, FileMode.Create,FileAccess.Write);
                 writer = PdfWriter.GetInstance(doc, fos);
+                doc.Open();
+                doc.AddDocListener(writer);
                 return true;
             }
             return false;
@@ -39,9 +50,10 @@ namespace WacomWebSocketService.PDF
          */
         private void close()
         {
-            writer.Close();
             doc.Close();
             fos.Close();
+            writer.Close();
+            reader.Close();
         }
 
         /**
@@ -51,16 +63,67 @@ namespace WacomWebSocketService.PDF
          * 
          * 
          */
-        public DocumentData doSignature(DocumentData source)
+        public bool doSignature(DocumentData source,GraphSign sign)
         {
-            this.open(source.Docpath);
-            //TODO some logic
+            bool result = false;
+            bool insertedSign = false;
+            int x = 200;
+            int y = 200;
+            int page = 1;
+            if (this.open(source))
+            {
+                //TODO some logic
+                for (int i = 1; i <= reader.NumberOfPages; i++)
+                {
+                    doc.SetPageSize(reader.GetPageSize(i));
+                    doc.NewPage();
+                    PdfContentByte cb = writer.DirectContent;
+                    PdfImportedPage importedPage = writer.GetImportedPage(reader, i);
+                    
+                    int rotation = reader.GetPageRotation(i);
+                    if (rotation == 90 || rotation == 270)
+                        cb.AddTemplate(importedPage, 0, -1.0F, 1.0F, 0, 0, reader.GetPageSizeWithRotation(i).Height);
+                    else
+                        cb.AddTemplate(importedPage, 1.0F, 0, 0, 1.0F, 0, 0);
+                    if (i == page)
+                        insertedSign = this.insertGraphSign(sign, cb, x, y);
+                }
+                if (insertedSign)
+                {
+                    //TODO PAdES
+                    result = true;
+
+                }
+            }
             
             this.close();
+            return result;
             throw new NotImplementedException();
 
         }
-
+        /**
+         * 
+         * 
+         */
+        private bool insertGraphSign(GraphSign sign,PdfContentByte page, int x, int y)
+        {
+            try
+            {
+                Image i = Image.GetInstance((System.Drawing.Image)sign.Image, BaseColor.WHITE);
+                page.AddImage(i, i.Width, 0, 0, i.Height, x, y);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message);
+                Log.Error(ex.StackTrace);
+                return false;
+            }
+        }
+        /**
+         * 
+         * 
+         */
         private DocumentData doPAdES(GraphSign signature, DocumentData coordinates)
         {
             DocumentData result = new DocumentData();
@@ -69,7 +132,10 @@ namespace WacomWebSocketService.PDF
             TSAClientBouncyCastle TSAClient = new TSAClientBouncyCastle(Properties.Settings.Default.tsaUrl, Properties.Settings.Default.tsaUser, Properties.Settings.Default.tsaPass);
             PdfReader reader = new PdfReader(coordinates.Docpath);
             PdfStamper stamper = PdfStamper.CreateSignature(reader, this.fos, '\0', null, true);
-            PdfSignatureAppearance sap = stamper.SignatureAppearance;             //sap.SignDate =
+            PdfSignatureAppearance appearance = stamper.SignatureAppearance;
+            appearance.SetVisibleSignature("");
+
+            //sap.SignDate =
 
             throw new NotImplementedException();
 
