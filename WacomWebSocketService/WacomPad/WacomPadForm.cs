@@ -442,7 +442,7 @@ namespace WacomWebSocketService.WacomPad
                 }
 
                 // Add up data once we have collected some down data.
-                if (this.sign.Points.Count != 0)
+                if ((this.sign!= null)&&(this.sign.Points.Count != 0))
                     this.sign.Points.Add(WacomPadUtils.toBioSignPoint(penData));
             }
         }
@@ -581,5 +581,18 @@ namespace WacomWebSocketService.WacomPad
         {
             return this.sign;
         }
+
+        //private void Form2_MouseClick(object sender, MouseEventArgs e)
+        //{
+        //    Point pt = clientToScreen(e.Location);
+        //    foreach (Button btn in m_btns)
+        //    {
+        //        if (btn.Bounds.Contains(pt))
+        //        {
+        //            btn.PerformClick();
+        //            break;
+        //        }
+        //    }
+        //}
     }
 }

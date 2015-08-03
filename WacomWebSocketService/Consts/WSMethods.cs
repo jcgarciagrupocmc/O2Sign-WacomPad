@@ -10,5 +10,6 @@ namespace WacomWebSocketService.Consts
     {
         public static readonly String GET_PDF_BY_ID = "/getpdfbyid/{0}";
         public static readonly String GET_DOCS_BY_OPERATION = "/getdocsbyoperation/{0}";
+        public static readonly String UPLOAD_SIGNED_PDF = "/uploadsignedpdf";
     }
 }

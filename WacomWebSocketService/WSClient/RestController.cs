@@ -142,12 +142,47 @@ namespace WacomWebSocketService.WSClient
         * 
         * @RETURN the return for the WS call.
         */
-        public String doPost(String url, String jsonContent)
+        //public String doPost(String url, String jsonContent)
+        //{
+        //    ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        //    RestRequest POSTRequest = new RestRequest(url, Method.POST);
+        //    POSTRequest.DateFormat = "UTF-8";
+        //    POSTRequest.AddBody(jsonContent);
+        //    POSTRequest.Timeout = 5000;
+        //    //POSTRequest.AddJsonBody(jsonContent);
+        //    RestResponse POSTResponse = (RestResponse)client.Execute(POSTRequest);
+        //    if (POSTResponse.ResponseStatus == ResponseStatus.Completed)
+        //        switch (POSTResponse.StatusCode)
+        //        {
+        //            case HttpStatusCode.OK:
+        //                return POSTResponse.Content;
+        //            case HttpStatusCode.NoContent:
+        //                return "";
+        //            default:
+        //                break;
+        //        }
+        //    else
+        //        Log.Error("WebService Connection to " + url + " has ended with ResponseStatus " + POSTResponse.ResponseStatus);
+        //    return "";
+            
+        //}
+
+
+        /**
+        * @METHOD doPOST implements a RESTful WS POST call.
+        * 
+        * @PARAMS url is the relative PATH of WS to call, jsonContent is the call json body
+        * 
+        * @RETURN the return for the WS call.
+        */
+        public String doPost(String url, object obj)
         {
             ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
             RestRequest POSTRequest = new RestRequest(url, Method.POST);
+            POSTRequest.DateFormat = "UTF-8";
+            POSTRequest.AddJsonBody(obj);
             POSTRequest.Timeout = 5000;
-            POSTRequest.AddJsonBody(jsonContent);
+            //POSTRequest.AddJsonBody(jsonContent);
             RestResponse POSTResponse = (RestResponse)client.Execute(POSTRequest);
             if (POSTResponse.ResponseStatus == ResponseStatus.Completed)
                 switch (POSTResponse.StatusCode)
@@ -162,7 +197,7 @@ namespace WacomWebSocketService.WSClient
             else
                 Log.Error("WebService Connection to " + url + " has ended with ResponseStatus " + POSTResponse.ResponseStatus);
             return "";
-            
+
         }
 
         /**

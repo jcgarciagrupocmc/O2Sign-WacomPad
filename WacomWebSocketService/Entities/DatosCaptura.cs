@@ -8,33 +8,33 @@ namespace WacomWebSocketService.Entities
 {
     public class DatosCaptura
     {
-        private int uuid;
+        public int uuid {get; set;}
 
-        public int Uuid
-        {
-            get { return uuid; }
-            set { uuid = value; }
-        }
-        private String idoperation;
+        //public int Uuid
+        //{
+        //    get { return uuid; }
+        //    set { uuid = value; }
+        //}
+        public String idoperation { get; set; }
 
-        public String Idoperation
-        {
-            get { return idoperation; }
-            set { idoperation = value; }
-        }
-        private String value;
+        //public String Idoperation
+        //{
+        //    get { return idoperation; }
+        //    set { idoperation = value; }
+        //}
+        public String value { get; set; }
 
-        public String Value
-        {
-            get { return this.value; }
-            set { this.value = value; }
-        }
-        private String docname;
+        //public String Value
+        //{
+        //    get { return this.value; }
+        //    set { this.value = value; }
+        //}
+        public String docname { get; set; }
 
-        public String Docname
-        {
-            get { return docname; }
-            set { docname = value; }
-        }
+        //public String Docname
+        //{
+        //    get { return docname; }
+        //    set { docname = value; }
+        //}
     }
 }

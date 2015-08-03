@@ -21,3 +21,7 @@ C:\Projects\CaserFirma\WacomWebSocketService\WacomWebSocketService\bin\Debug\Int
 C:\Projects\CaserFirma\WacomWebSocketService\WacomWebSocketService\obj\Debug\WacomWebSocketService.WacomPad.WacomPadForm.resources
 C:\Projects\CaserFirma\WacomWebSocketService\WacomWebSocketService\obj\Debug\WacomWebSocketService.csproj.GenerateResource.Cache
 C:\Projects\CaserFirma\WacomWebSocketService\WacomWebSocketService\obj\Debug\WacomWebSocketService.UI.PdfListUI.resources
+C:\Projects\CaserFirma\WacomWebSocketService\WacomWebSocketService\bin\Debug\certificate\11944524-caser.firma.es.cert
+C:\Projects\CaserFirma\WacomWebSocketService\WacomWebSocketService\bin\Debug\certificate\11944524-caser.firma.es.key
+C:\Projects\CaserFirma\WacomWebSocketService\WacomWebSocketService\bin\Debug\es\WacomWebSocketService.resources.dll
+C:\Projects\CaserFirma\WacomWebSocketService\WacomWebSocketService\obj\Debug\es\WacomWebSocketService.resources.dll

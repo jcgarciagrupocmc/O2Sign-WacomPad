@@ -67,12 +67,8 @@ namespace WacomWebSocketService.PDF
         {
             bool result = false;
             bool insertedSign = false;
-            int x = 200;
-            int y = 200;
-            int page = 1;
             if (this.open(source))
             {
-                //TODO some logic
                 for (int i = 1; i <= reader.NumberOfPages; i++)
                 {
                     doc.SetPageSize(reader.GetPageSize(i));
@@ -85,12 +81,13 @@ namespace WacomWebSocketService.PDF
                         cb.AddTemplate(importedPage, 0, -1.0F, 1.0F, 0, 0, reader.GetPageSizeWithRotation(i).Height);
                     else
                         cb.AddTemplate(importedPage, 1.0F, 0, 0, 1.0F, 0, 0);
-                    if (i == page)
-                        insertedSign = this.insertGraphSign(sign, cb, x, y);
+                    if (i == source.Page)
+                        insertedSign = this.insertGraphSign(sign, cb, source.X, source.Y);
                 }
                 if (insertedSign)
                 {
-                    //TODO PAdES
+                    this.close();
+                    DigitalSignUtils.signPDF(source);
                     result = true;
 
                 }

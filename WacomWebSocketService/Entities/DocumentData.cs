@@ -58,5 +58,29 @@ namespace WacomWebSocketService.Entities
             get { return docsignedpath; }
             set { docsignedpath = value; }
         }
+
+        private int x=100;
+
+        public int X
+        {
+            get { return x; }
+            set { x = value; }
+        }
+
+        private int y=100;
+
+        public int Y
+        {
+            get { return y; }
+            set { y = value; }
+        }
+
+        private int page=1;
+
+        public int Page
+        {
+            get { return page; }
+            set { page = value; }
+        }
     }
 }

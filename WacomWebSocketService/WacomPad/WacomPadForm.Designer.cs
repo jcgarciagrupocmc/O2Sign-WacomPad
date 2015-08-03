@@ -39,6 +39,9 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "WacomPadForm";
             this.Text = "WacomPadForm";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form2_FormClosed);
+            this.Paint += new System.Windows.Forms.PaintEventHandler(this.Form2_Paint);
+            this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Form2_MouseClick);
             this.ResumeLayout(false);
 
         }

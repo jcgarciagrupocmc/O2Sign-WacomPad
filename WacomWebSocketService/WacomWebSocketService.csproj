@@ -82,6 +82,7 @@
     <Compile Include="Consts\CommandType.cs" />
     <Compile Include="Consts\ResponseType.cs" />
     <Compile Include="Consts\WSMethods.cs" />
+    <Compile Include="Control\ControlTools.cs" />
     <Compile Include="Control\Logic.cs" />
     <Compile Include="DocumentRecieverService.cs">
       <SubType>Component</SubType>
@@ -126,8 +127,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="certificate\11944524-caser.firma.es.cert" />
-    <None Include="certificate\11944524-caser.firma.es.key" />
+    <EmbeddedResource Include="certificate\11944524-caser.firma.es.cert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="certificate\11944524-caser.firma.es.key">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
     <None Include="log4net.config" />
     <None Include="log4net.unix.config" />
     <None Include="packages.config" />

@@ -24,7 +24,9 @@ namespace WacomWebSocketService.WacomPad
                 WacomPadForm demo = new WacomPadForm(usbDevice);
 
                 demo.ShowDialog();
-                return demo.getSign();
+                GraphSign result = demo.getSign();
+                demo.Dispose();
+                return result;
 
             }
             catch (Exception ex)

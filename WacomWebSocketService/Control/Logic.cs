@@ -59,26 +59,34 @@ namespace WacomWebSocketService.Control
         /**
          * 
          */
-        internal void newOperation(string jsonOperation)
+        internal List<DocumentData> newOperation(string jsonOperation)
         {
             List<DocumentData> list = JsonConvert.DeserializeObject<List<DocumentData>>(jsonOperation);
-            if (list.Count > 0) { 
+            if ((list!=null) && (list.Count > 0)) { 
                 if (Directory.Exists(Properties.Settings.Default.tempPath + list.ElementAt(0).Idoperation))
                     Directory.Delete(Properties.Settings.Default.tempPath + list.ElementAt(0).Idoperation, true);
                 Directory.CreateDirectory(Properties.Settings.Default.tempPath + list.ElementAt(0).Idoperation);
+                Directory.CreateDirectory(Properties.Settings.Default.tempPath + list.ElementAt(0).Idoperation + "\\signed");
 
                 foreach (DocumentData doc in list)
                 {
                     String url = String.Format(WSMethods.GET_PDF_BY_ID, doc.Uuid);
                     Byte[] pdfBytes = this.restController.doGet(url);
-                    doc.Docpath = Properties.Settings.Default.tempPath + list.ElementAt(0).Idoperation + "\\" + doc.Docname;
-                    FileStream fis = File.Create(doc.Docpath, pdfBytes.Length);
-                    fis.Write(pdfBytes, 0, pdfBytes.Length);
-                    fis.Flush();
-                    fis.Close();
+                    if (pdfBytes != null)
+                    {
+                        doc.Docpath = Properties.Settings.Default.tempPath + list.ElementAt(0).Idoperation + "\\" + doc.Docname;
+                        doc.Docsignedpath = Properties.Settings.Default.tempPath + list.ElementAt(0).Idoperation + "\\signed\\" + doc.Docname;
+                        FileStream fis = File.Create(doc.Docpath, pdfBytes.Length);
+                        fis.Write(pdfBytes, 0, pdfBytes.Length);
+                        fis.Flush();
+                        fis.Close();
+                    }
+                    
                 }
                 //TODO print list
             }
+
+            return list;
 
             //throw new NotImplementedException();
         }
@@ -106,6 +114,16 @@ namespace WacomWebSocketService.Control
                 return this.pdfController.doSignature(doc, sign);
             }
             return false; 
+        }
+
+        internal bool uploadSignedOperation(List<DocumentData> list)
+        {
+            foreach (DocumentData doc in list)
+            {
+                //String jsonObject = JsonConvert.SerializeObject(ControlTools.toDatosCaptura(doc));
+                restController.doPost(WSMethods.UPLOAD_SIGNED_PDF, ControlTools.toDatosCaptura(doc));
+            }
+            return true;
         }
         /**
          * 
