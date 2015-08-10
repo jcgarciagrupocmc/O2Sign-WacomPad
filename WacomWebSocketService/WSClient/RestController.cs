@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Text;
-using System.Threading.Tasks;
-using System.IO;
 using RestSharp;
 using log4net;
 
@@ -17,6 +14,7 @@ namespace WacomWebSocketService.WSClient
     public class RestController
     {
         private RestClient client;
+        private ILog Log;
         /**
          * @METHOD this constructur inicializes the client
          * @PARAMS recieves the host to connect
@@ -26,6 +24,10 @@ namespace WacomWebSocketService.WSClient
         {
             this.client = new RestClient(host);
             this.client.Encoding = Encoding.UTF8;
+            if (LogManager.GetCurrentLoggers().Length > 0)
+                this.Log = LogManager.GetCurrentLoggers()[0];
+            else
+                this.Log = LogManager.GetLogger(Properties.Settings.Default.logName);
         }
 
         /**
@@ -36,6 +38,10 @@ namespace WacomWebSocketService.WSClient
         {
             this.client = new RestClient(host);
             this.client.Encoding = encoding;
+            if (LogManager.GetCurrentLoggers().Length > 0)
+                this.Log = LogManager.GetCurrentLoggers()[0];
+            else
+                this.Log = LogManager.GetLogger(Properties.Settings.Default.logName);
         }
 
         //public String doPOST(String url, String jsonContent)
@@ -114,9 +120,8 @@ namespace WacomWebSocketService.WSClient
          */
         public String doGet(String url, List<Parameter> parameters)
         {
-            ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
             RestRequest GETRequest = new RestRequest(url, Method.GET);
-            //GETRequest.Timeout = 5000;
+            GETRequest.Timeout = 5000;
             if(parameters!=null)
                 foreach (Parameter p in parameters)
                     GETRequest.AddParameter(p);
@@ -177,12 +182,10 @@ namespace WacomWebSocketService.WSClient
         */
         public String doPost(String url, object obj)
         {
-            ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
             RestRequest POSTRequest = new RestRequest(url, Method.POST);
             POSTRequest.DateFormat = "UTF-8";
             POSTRequest.AddJsonBody(obj);
             POSTRequest.Timeout = 5000;
-            //POSTRequest.AddJsonBody(jsonContent);
             RestResponse POSTResponse = (RestResponse)client.Execute(POSTRequest);
             if (POSTResponse.ResponseStatus == ResponseStatus.Completed)
                 switch (POSTResponse.StatusCode)
@@ -209,10 +212,9 @@ namespace WacomWebSocketService.WSClient
          */
         public Byte[] doGet(String url)
         {
-            ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
             RestRequest GETRequest = new RestRequest(url, Method.GET);
             GETRequest.AddHeader("Accept","application/pdf");
-            //GETRequest.Timeout = 5000;
+            GETRequest.Timeout = 5000;
             RestResponse GETResponse = (RestResponse)client.Execute(GETRequest);
             if (GETResponse.ResponseStatus == ResponseStatus.Completed)
                 switch (GETResponse.StatusCode)

@@ -127,12 +127,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <EmbeddedResource Include="certificate\11944524-caser.firma.es.cert">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="certificate\11944524-caser.firma.es.key">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
+    <EmbeddedResource Include="caser_firma_es.key" />
+    <EmbeddedResource Include="caser_firma_es.cert" />
     <None Include="log4net.config" />
     <None Include="log4net.unix.config" />
     <None Include="packages.config" />

@@ -1,21 +1,27 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Drawing;
-using System.Drawing.Imaging;
 using WacomWebSocketService.Entities;
-using System.Windows.Forms;
+using log4net;
 
 
 namespace WacomWebSocketService.WacomPad
 {
+    /**
+     * @Class class that controlls Wacom Pad Logic
+     */
     public class WacomPadController
     {
-
+        /**
+         * @Method calls the Wacom Pad UI for signing and returns the sign data
+         * @Return GraphSign if confirmed, null if cancel by the user
+         */
         public GraphSign padSigning()
         {
+
+            ILog Log;
+            if (LogManager.GetCurrentLoggers().Length > 0)
+                Log = LogManager.GetCurrentLoggers()[0];
+            else
+                Log = LogManager.GetLogger(Properties.Settings.Default.logName);
             try
             {
                 wgssSTU.UsbDevices usbDevices = new wgssSTU.UsbDevices();
@@ -31,10 +37,14 @@ namespace WacomWebSocketService.WacomPad
             }
             catch (Exception ex)
             {
+                Log.Error(ex.Message, ex);
                 return null;
             }
         }
-
+        /**
+         * @Method Checks if a Wacom Pad is connected and ready in the system
+         * @Return true if Wacom Pad is available, false otherwise
+         */
         public bool checkPadConnected()
         {
             wgssSTU.UsbDevices usbDevices = new wgssSTU.UsbDevices();

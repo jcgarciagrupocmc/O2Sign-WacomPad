@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace WacomWebSocketService.Consts
 {
 
@@ -12,12 +7,22 @@ namespace WacomWebSocketService.Consts
      */
     public enum ResponseType
     {
+
+        //ResponseMessage for any error, error as paramenter
         Error = -1,
+        //ResponseMessage for a Register Command OK
         Connection = 0,
+        //ResponseMessage for a Disconnected Command OK
         Disconnect = 1,
-        Message = 2,
-        NewFile = 3,
-        FileRecieved =4,
-        DataRecieved =5
+        //ResponseMessage for a GetOperation Command, List<DocumentData> json object as parameter
+        OperationList = 2,
+        //ResponseMessage for GetFile and GetSignedFile Commands, PDF file in Base64 as parameter
+        File = 3,
+        //ResponseMessage for a SignFile Command OK
+        SignedFile = 4,
+        //ResponseMessage for a UploadOperation Command OK
+        OperationOK = 5,
+        //ResponseMessage for a CancelOperation Command OK
+        OperationCanceled = 6
     }
 }

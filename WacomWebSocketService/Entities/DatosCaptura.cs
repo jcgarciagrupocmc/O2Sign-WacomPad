@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace WacomWebSocketService.Entities
 {
     public class DatosCaptura
     {
+        //document uuid
         public int uuid {get; set;}
 
         //public int Uuid
@@ -15,6 +12,8 @@ namespace WacomWebSocketService.Entities
         //    get { return uuid; }
         //    set { uuid = value; }
         //}
+
+        //operation of the document
         public String idoperation { get; set; }
 
         //public String Idoperation
@@ -22,6 +21,8 @@ namespace WacomWebSocketService.Entities
         //    get { return idoperation; }
         //    set { idoperation = value; }
         //}
+
+        //PDF file on Base64
         public String value { get; set; }
 
         //public String Value
@@ -29,6 +30,8 @@ namespace WacomWebSocketService.Entities
         //    get { return this.value; }
         //    set { this.value = value; }
         //}
+
+        //filename
         public String docname { get; set; }
 
         //public String Docname

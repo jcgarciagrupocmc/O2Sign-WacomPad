@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WacomWebSocketService.Consts;
+﻿using WacomWebSocketService.Consts;
 
 namespace WacomWebSocketService.WebScoketServer
 {
     public class Response
     {
+        // Response Type
         public ResponseType Type { get; set; }
+        // Response Data
         public dynamic Data { get; set; }
     }
 }

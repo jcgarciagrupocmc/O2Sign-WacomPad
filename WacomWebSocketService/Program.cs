@@ -17,10 +17,11 @@ namespace WacomWebSocketService
         static void Main()
         {
             System.IO.Directory.SetCurrentDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
-            Logic logic = new Logic();
-            Test.SinWebSocket test = new Test.SinWebSocket(logic);
-            //test.getJsonOperation("2015080314351438605306640");
-            test.signPDF();
+            Logic logic = Logic.getInstance();
+            //Logic logic = new Logic();
+            Test.SinWebSocket test = new Test.SinWebSocket();
+            test.getJsonOperation("20150810113119");
+            //test.signPDF();
             //logic.onStart();
             //SuperSocketController ssController = new SuperSocketController();
             //ssController.open();

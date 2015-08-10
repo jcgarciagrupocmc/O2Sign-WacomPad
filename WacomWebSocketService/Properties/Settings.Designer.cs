@@ -25,7 +25,7 @@ namespace WacomWebSocketService.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://172.26.0.71:8080/BioSign/rest/signservices")]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://146.148.4.166:8080/BioSign/rest/signservices")]
         public string host {
             get {
                 return ((string)(this["host"]));
@@ -68,27 +68,30 @@ namespace WacomWebSocketService.Properties {
             }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("WacomWebSocketService.11944524-caser.firma.es.cert")]
+        [global::System.Configuration.DefaultSettingValueAttribute("WacomWebSocketService.caser_firma_es.cert")]
         public string certFile {
             get {
                 return ((string)(this["certFile"]));
             }
-            set {
-                this["certFile"] = value;
-            }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute(".\\\\certificate\\\\11944524-caser.firma.es.key")]
+        [global::System.Configuration.DefaultSettingValueAttribute("WacomWebSocketService.caser_firma_es.key")]
         public string keyFile {
             get {
                 return ((string)(this["keyFile"]));
             }
-            set {
-                this["keyFile"] = value;
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("WacomPadServiceLog")]
+        public string logName {
+            get {
+                return ((string)(this["logName"]));
             }
         }
     }

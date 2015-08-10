@@ -1,17 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using iTextSharp.text.pdf;
 using iTextSharp.text;
 using System.IO;
 using WacomWebSocketService.Entities;
-using iTextSharp.text.pdf.security;
 using log4net;
 
 namespace WacomWebSocketService.PDF
 {
+
+    /**
+     *@Class Class reponsable of all PDF read/write and signing operations
+     */
     public class PDFController
     {
         private PdfWriter writer;
@@ -20,10 +19,15 @@ namespace WacomWebSocketService.PDF
         private Document doc;
         private ILog Log;
 
-
+        /**
+         * @Method Default constructor initializes the logger.
+         */
         public PDFController()
         {
-            this.Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+            if (LogManager.GetCurrentLoggers().Length > 0)
+                this.Log = LogManager.GetCurrentLoggers()[0];
+            else
+                this.Log = LogManager.GetLogger(Properties.Settings.Default.logName);
         }
         /**
          * @Method open a existing pdf file
@@ -57,11 +61,10 @@ namespace WacomWebSocketService.PDF
         }
 
         /**
-         * 
-         * 
-         * 
-         * 
-         * 
+         * @Method Method that inserts the GraphSign in the pdf document and call for signing it
+         * @Params DocumentData source document to be signed
+         * @Params GraphSign sign Image and metadata about the Graphical Sign
+         * @Return true if the document is correctly signed, false if something wrong
          */
         public bool doSignature(DocumentData source,GraphSign sign)
         {
@@ -69,6 +72,7 @@ namespace WacomWebSocketService.PDF
             bool insertedSign = false;
             if (this.open(source))
             {
+                //Copy PDF
                 for (int i = 1; i <= reader.NumberOfPages; i++)
                 {
                     doc.SetPageSize(reader.GetPageSize(i));
@@ -81,26 +85,28 @@ namespace WacomWebSocketService.PDF
                         cb.AddTemplate(importedPage, 0, -1.0F, 1.0F, 0, 0, reader.GetPageSizeWithRotation(i).Height);
                     else
                         cb.AddTemplate(importedPage, 1.0F, 0, 0, 1.0F, 0, 0);
+                    //Insert Graph image on coordenates
                     if (i == source.Page)
                         insertedSign = this.insertGraphSign(sign, cb, source.X, source.Y);
                 }
                 if (insertedSign)
                 {
+                    //Do PAdES
                     this.close();
                     DigitalSignUtils.signPDF(source);
                     result = true;
-
                 }
-            }
-            
+            }            
             this.close();
             return result;
-            throw new NotImplementedException();
-
         }
         /**
-         * 
-         * 
+         * @Method insert Sign Image in coordenates
+         * @Params GraphSign sign biometrical graph sign
+         * @Params PdfContentByte page where image will be inserted
+         * @Params int x X Coordinate
+         * @Params int y Y Coordinate
+         * @Return true if all its OK, false if something wrong
          */
         private bool insertGraphSign(GraphSign sign,PdfContentByte page, int x, int y)
         {
@@ -112,30 +118,32 @@ namespace WacomWebSocketService.PDF
             }
             catch (Exception ex)
             {
+                //Logging exception
                 Log.Error(ex.Message);
                 Log.Error(ex.StackTrace);
                 return false;
             }
         }
-        /**
-         * 
-         * 
-         */
-        private DocumentData doPAdES(GraphSign signature, DocumentData coordinates)
-        {
-            DocumentData result = new DocumentData();
-            result.Docname = coordinates.Docname;
+        
+        ///**
+        // * 
+        // * 
+        // */
+        //private DocumentData doPAdES(GraphSign signature, DocumentData coordinates)
+        //{
+        //    DocumentData result = new DocumentData();
+        //    result.Docname = coordinates.Docname;
 
-            TSAClientBouncyCastle TSAClient = new TSAClientBouncyCastle(Properties.Settings.Default.tsaUrl, Properties.Settings.Default.tsaUser, Properties.Settings.Default.tsaPass);
-            PdfReader reader = new PdfReader(coordinates.Docpath);
-            PdfStamper stamper = PdfStamper.CreateSignature(reader, this.fos, '\0', null, true);
-            PdfSignatureAppearance appearance = stamper.SignatureAppearance;
-            appearance.SetVisibleSignature("");
+        //    TSAClientBouncyCastle TSAClient = new TSAClientBouncyCastle(Properties.Settings.Default.tsaUrl, Properties.Settings.Default.tsaUser, Properties.Settings.Default.tsaPass);
+        //    PdfReader reader = new PdfReader(coordinates.Docpath);
+        //    PdfStamper stamper = PdfStamper.CreateSignature(reader, this.fos, '\0', null, true);
+        //    PdfSignatureAppearance appearance = stamper.SignatureAppearance;
+        //    appearance.SetVisibleSignature("");
 
-            //sap.SignDate =
+        //    //sap.SignDate =
 
-            throw new NotImplementedException();
+        //    throw new NotImplementedException();
 
-        }
+        //}
     }
 }

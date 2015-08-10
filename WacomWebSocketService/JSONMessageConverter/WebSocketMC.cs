@@ -5,8 +5,6 @@ using WacomWebSocketService.Exceptions;
 using WacomWebSocketService.WebScoketServer;
 using log4net;
 using WacomWebSocketService.WSClient;
-using System.Collections.Generic;
-using RestSharp;
 using WacomWebSocketService.Control;
 
 namespace WacomWebSocketService.JSONMessageConverter
@@ -16,7 +14,12 @@ namespace WacomWebSocketService.JSONMessageConverter
 
         internal override string recieveMessage(string message)
         {
-            ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+            ILog Log;
+            if (LogManager.GetCurrentLoggers().Length > 0)
+                Log = LogManager.GetCurrentLoggers()[0];
+            else
+                Log = LogManager.GetLogger(Properties.Settings.Default.logName);
             try
             {
                 Response r;
@@ -36,12 +39,12 @@ namespace WacomWebSocketService.JSONMessageConverter
                             String result = ws.doGet(url, null);
                             if (result != String.Empty)
                             {
-                                Logic logic = new Logic();
+                                Logic logic = Logic.getInstance();
                                 logic.newOperation(result);
                             }
                                 
                             Console.WriteLine(result);
-                            r = new Response { Type = ResponseType.DataRecieved, Data = result };
+                            r = new Response { Type = ResponseType.OperationList, Data = result };
                         }
                         else
                             r = new Response { Type = ResponseType.Error };
@@ -54,14 +57,14 @@ namespace WacomWebSocketService.JSONMessageConverter
                             String url = String.Format(WSMethods.GET_PDF_BY_ID, obj.idFile);
                             String result = ws.doGet(url, null);
                             Console.WriteLine(result);
-                            r = new Response { Type = ResponseType.FileRecieved, Data = result };
+                            r = new Response { Type = ResponseType.File, Data = result };
                         }
                         else
                             r = new Response { Type = ResponseType.Error };
                         return JsonConvert.SerializeObject(r);
                         //BroadcastCertsList(session);
                         // ListaCerts( session);
-                        break;
+                        //break;
                     
 
                 }
