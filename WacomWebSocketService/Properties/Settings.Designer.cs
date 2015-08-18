@@ -94,5 +94,14 @@ namespace WacomWebSocketService.Properties {
                 return ((string)(this["logName"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.33")]
+        public string imageRatio {
+            get {
+                return ((string)(this["imageRatio"]));
+            }
+        }
     }
 }

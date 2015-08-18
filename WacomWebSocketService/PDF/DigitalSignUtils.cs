@@ -10,54 +10,57 @@ using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using WacomWebSocketService.Entities;
 using log4net;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace WacomWebSocketService.PDF
 {
     class DigitalSignUtils
     {
-        //static String certificadoPem = "-----BEGIN X509 CERTIFICATE-----\n" +
-        //"MIIHpDCCBoygAwIBAgIJALuqnw6CQXyQMA0GCSqGSIb3DQEBBQUAMIHgMQswCQYD\n" +
-        //"VQQGEwJFUzEuMCwGCSqGSIb3DQEJARYfYWNfY2FtZXJmaXJtYV9jY0BjYW1lcmZp\n" +
-        //"cm1hLmNvbTFDMEEGA1UEBxM6TWFkcmlkIChzZWUgY3VycmVudCBhZGRyZXNzIGF0\n" +
-        //"IHd3dy5jYW1lcmZpcm1hLmNvbS9hZGRyZXNzKTESMBAGA1UEBRMJQTgyNzQzMjg3\n" +
-        //"MRkwFwYDVQQKExBBQyBDYW1lcmZpcm1hIFNBMS0wKwYDVQQDEyRBQyBDYW1lcmZp\n" +
-        //"cm1hIENlcnRpZmljYWRvcyBDYW1lcmFsZXMwHhcNMTQwNjExMTEyMjMzWhcNMTYw\n" +
-        //"NjEwMTEyMjMzWjCCAVIxLjAsBgNVBA0MJVF1YWxpZmllZCBDZXJ0aWZpY2F0ZTog\n" +
-        //"Q0FNLVBKLVNXLUtQU0MxLzAtBgNVBAMMJkNNQyBPUEVSQVRJT05TIE9VVFNPVVJD\n" +
-        //"SU5HIENNQ08yLCBTLkwuMSUwIwYJKoZIhvcNAQkBFhZqbGN1bXBsaWRvQGdydXBv\n" +
-        //"Y21jLmVzMRIwEAYDVQQFEwlCODYyNzk4MTcxGTAXBgNVBAQMEEhPUlRFTEFOTyBM\n" +
-        //"w5NQRVoxDjAMBgNVBCoMBUpBSU1FMRkwFwYKKwYBBAGBkxYBAQwJMTIzNjI1OTFF\n" +
-        //"MRswGQYDVQQMDBJDT05TRUpFUk8gREVMRUdBRE8xEzARBgNVBAsMCkRJUkVDQ0nD\n" +
-        //"k04xLzAtBgNVBAoMJkNNQyBPUEVSQVRJT05TIE9VVFNPVVJDSU5HIENNQ08yLCBT\n" +
-        //"LkwuMQswCQYDVQQGEwJFUzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEB\n" +
-        //"ALyCuVJsSJCFZwsaYYVFeo5hn36cQzlSCXMePR8aBZKsUF4XlybwUOjRf5dNjjy9\n" +
-        //"2TlITyg+wFs4cwWA6GMXzNkl/dPzAdZXzfKljK/ls+s8TdWgOuSxccEXJlPd8QoF\n" +
-        //"3N7pwoFGY2x0+n/Q0RqWSQq+OKL3I9qa6U9rEnU0g7jqDvNlw9SwswhshHn+9pCt\n" +
-        //"1hAcBnymCVtq+Y73W0mM3Xf4dXp1e815pA2oxfRCU9hqs7XPdD3nZMb7K9+bdJCH\n" +
-        //"fUtqqvyO+O0vA6xS3FCJqLDWAbJNeavJoPB8BLbR7b5nIAioaM62E5iGaWlL8hWD\n" +
-        //"bsc+z6lGgRuwc5f6J7GjFNcCAwEAAaOCAuowggLmMAwGA1UdEwEB/wQCMAAwEQYJ\n" +
-        //"YIZIAYb4QgEBBAQDAgWgMA4GA1UdDwEB/wQEAwID+DAdBgNVHSUEFjAUBggrBgEF\n" +
-        //"BQcDAgYIKwYBBQUHAwQwHQYDVR0OBBYEFPv/Rn7V3I8+UY32vVkFlN0G+xWbMHgG\n" +
-        //"CCsGAQUFBwEBBGwwajBABggrBgEFBQcwAoY0aHR0cDovL3d3dy5jYW1lcmZpcm1h\n" +
-        //"LmNvbS9jZXJ0cy9hY19jYW1lcmZpcm1hX2NjLmNydDAmBggrBgEFBQcwAYYaaHR0\n" +
-        //"cDovL29jc3AuY2FtZXJmaXJtYS5jb20wgasGA1UdIwSBozCBoIAUth9OnRxokS43\n" +
-        //"cmDhRo9apSoxMbmhgYSkgYEwfzELMAkGA1UEBhMCRVUxJzAlBgNVBAoTHkFDIENh\n" +
-        //"bWVyZmlybWEgU0EgQ0lGIEE4Mjc0MzI4NzEjMCEGA1UECxMaaHR0cDovL3d3dy5j\n" +
-        //"aGFtYmVyc2lnbi5vcmcxIjAgBgNVBAMTGUNoYW1iZXJzIG9mIENvbW1lcmNlIFJv\n" +
-        //"b3SCAQUwdgYDVR0fBG8wbTA0oDKgMIYuaHR0cDovL2NybC5jYW1lcmZpcm1hLmNv\n" +
-        //"bS9hY19jYW1lcmZpcm1hX2NjLmNybDA1oDOgMYYvaHR0cDovL2NybDEuY2FtZXJm\n" +
-        //"aXJtYS5jb20vYWNfY2FtZXJmaXJtYV9jYy5jcmwwIQYDVR0RBBowGIEWamxjdW1w\n" +
-        //"bGlkb0BncnVwb2NtYy5lczAqBgNVHRIEIzAhgR9hY19jYW1lcmZpcm1hX2NjQGNh\n" +
-        //"bWVyZmlybWEuY29tMFUGA1UdIAROMEwwSgYNKwYBBAGBhy4KCQQBATA5MCkGCCsG\n" +
-        //"AQUFBwIBFh1odHRwczovL3BvbGljeS5jYW1lcmZpcm1hLmNvbTAMBggrBgEFBQcC\n" +
-        //"AjAAMC8GCCsGAQUFBwEDBCMwITAIBgYEAI5GAQEwFQYGBACORgECMAsTA0VVUgIB\n" +
-        //"AAIBATANBgkqhkiG9w0BAQUFAAOCAQEAeEBpgh7Yh9zXSJNnEamscxgqYU6jwOdn\n" +
-        //"toi9oIkxl5LJd/GKH8jY4k1nm4HkGLjEj3XKRFe/gFicW4U4l977EeEzxQRz1Nk8\n" +
-        //"ovAceTvRAfjtxGXMmmwNoTLpnwekQiXXoBZc4Y8iZXEIuhCdVClSGj9sdfT+fuln\n" +
-        //"b0Ct8Qk5DKE1OTHUruiP+CHE+L3AYzdAG6NwoMbIatYvJL/muYSLLCjmJNB6/xlj\n" +
-        //"cH48OalrtFwm4TunLJYGLsUdk6XoOBwuxEqgjks/79ekyDpJcqnM3Hb4raNQn+UF\n" +
-        //"/liD5wOSw1sq90Uud00a+01PgMEIkBkPaNWUb0PzXs+LU51nOs1Rtg==\n" +
-        //"-----END X509 CERTIFICATE-----";
+        private static int  bufferSize = 128;
+        static String certificadoPem = "-----BEGIN CERTIFICATE-----\n" +
+        "MIIHpDCCBoygAwIBAgIJALuqnw6CQXyQMA0GCSqGSIb3DQEBBQUAMIHgMQswCQYD\n" +
+        "VQQGEwJFUzEuMCwGCSqGSIb3DQEJARYfYWNfY2FtZXJmaXJtYV9jY0BjYW1lcmZp\n" +
+        "cm1hLmNvbTFDMEEGA1UEBxM6TWFkcmlkIChzZWUgY3VycmVudCBhZGRyZXNzIGF0\n" +
+        "IHd3dy5jYW1lcmZpcm1hLmNvbS9hZGRyZXNzKTESMBAGA1UEBRMJQTgyNzQzMjg3\n" +
+        "MRkwFwYDVQQKExBBQyBDYW1lcmZpcm1hIFNBMS0wKwYDVQQDEyRBQyBDYW1lcmZp\n" +
+        "cm1hIENlcnRpZmljYWRvcyBDYW1lcmFsZXMwHhcNMTQwNjExMTEyMjMzWhcNMTYw\n" +
+        "NjEwMTEyMjMzWjCCAVIxLjAsBgNVBA0MJVF1YWxpZmllZCBDZXJ0aWZpY2F0ZTog\n" +
+        "Q0FNLVBKLVNXLUtQU0MxLzAtBgNVBAMMJkNNQyBPUEVSQVRJT05TIE9VVFNPVVJD\n" +
+        "SU5HIENNQ08yLCBTLkwuMSUwIwYJKoZIhvcNAQkBFhZqbGN1bXBsaWRvQGdydXBv\n" +
+        "Y21jLmVzMRIwEAYDVQQFEwlCODYyNzk4MTcxGTAXBgNVBAQMEEhPUlRFTEFOTyBM\n" +
+        "w5NQRVoxDjAMBgNVBCoMBUpBSU1FMRkwFwYKKwYBBAGBkxYBAQwJMTIzNjI1OTFF\n" +
+        "MRswGQYDVQQMDBJDT05TRUpFUk8gREVMRUdBRE8xEzARBgNVBAsMCkRJUkVDQ0nD\n" +
+        "k04xLzAtBgNVBAoMJkNNQyBPUEVSQVRJT05TIE9VVFNPVVJDSU5HIENNQ08yLCBT\n" +
+        "LkwuMQswCQYDVQQGEwJFUzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEB\n" +
+        "ALyCuVJsSJCFZwsaYYVFeo5hn36cQzlSCXMePR8aBZKsUF4XlybwUOjRf5dNjjy9\n" +
+        "2TlITyg+wFs4cwWA6GMXzNkl/dPzAdZXzfKljK/ls+s8TdWgOuSxccEXJlPd8QoF\n" +
+        "3N7pwoFGY2x0+n/Q0RqWSQq+OKL3I9qa6U9rEnU0g7jqDvNlw9SwswhshHn+9pCt\n" +
+        "1hAcBnymCVtq+Y73W0mM3Xf4dXp1e815pA2oxfRCU9hqs7XPdD3nZMb7K9+bdJCH\n" +
+        "fUtqqvyO+O0vA6xS3FCJqLDWAbJNeavJoPB8BLbR7b5nIAioaM62E5iGaWlL8hWD\n" +
+        "bsc+z6lGgRuwc5f6J7GjFNcCAwEAAaOCAuowggLmMAwGA1UdEwEB/wQCMAAwEQYJ\n" +
+        "YIZIAYb4QgEBBAQDAgWgMA4GA1UdDwEB/wQEAwID+DAdBgNVHSUEFjAUBggrBgEF\n" +
+        "BQcDAgYIKwYBBQUHAwQwHQYDVR0OBBYEFPv/Rn7V3I8+UY32vVkFlN0G+xWbMHgG\n" +
+        "CCsGAQUFBwEBBGwwajBABggrBgEFBQcwAoY0aHR0cDovL3d3dy5jYW1lcmZpcm1h\n" +
+        "LmNvbS9jZXJ0cy9hY19jYW1lcmZpcm1hX2NjLmNydDAmBggrBgEFBQcwAYYaaHR0\n" +
+        "cDovL29jc3AuY2FtZXJmaXJtYS5jb20wgasGA1UdIwSBozCBoIAUth9OnRxokS43\n" +
+        "cmDhRo9apSoxMbmhgYSkgYEwfzELMAkGA1UEBhMCRVUxJzAlBgNVBAoTHkFDIENh\n" +
+        "bWVyZmlybWEgU0EgQ0lGIEE4Mjc0MzI4NzEjMCEGA1UECxMaaHR0cDovL3d3dy5j\n" +
+        "aGFtYmVyc2lnbi5vcmcxIjAgBgNVBAMTGUNoYW1iZXJzIG9mIENvbW1lcmNlIFJv\n" +
+        "b3SCAQUwdgYDVR0fBG8wbTA0oDKgMIYuaHR0cDovL2NybC5jYW1lcmZpcm1hLmNv\n" +
+        "bS9hY19jYW1lcmZpcm1hX2NjLmNybDA1oDOgMYYvaHR0cDovL2NybDEuY2FtZXJm\n" +
+        "aXJtYS5jb20vYWNfY2FtZXJmaXJtYV9jYy5jcmwwIQYDVR0RBBowGIEWamxjdW1w\n" +
+        "bGlkb0BncnVwb2NtYy5lczAqBgNVHRIEIzAhgR9hY19jYW1lcmZpcm1hX2NjQGNh\n" +
+        "bWVyZmlybWEuY29tMFUGA1UdIAROMEwwSgYNKwYBBAGBhy4KCQQBATA5MCkGCCsG\n" +
+        "AQUFBwIBFh1odHRwczovL3BvbGljeS5jYW1lcmZpcm1hLmNvbTAMBggrBgEFBQcC\n" +
+        "AjAAMC8GCCsGAQUFBwEDBCMwITAIBgYEAI5GAQEwFQYGBACORgECMAsTA0VVUgIB\n" +
+        "AAIBATANBgkqhkiG9w0BAQUFAAOCAQEAeEBpgh7Yh9zXSJNnEamscxgqYU6jwOdn\n" +
+        "toi9oIkxl5LJd/GKH8jY4k1nm4HkGLjEj3XKRFe/gFicW4U4l977EeEzxQRz1Nk8\n" +
+        "ovAceTvRAfjtxGXMmmwNoTLpnwekQiXXoBZc4Y8iZXEIuhCdVClSGj9sdfT+fuln\n" +
+        "b0Ct8Qk5DKE1OTHUruiP+CHE+L3AYzdAG6NwoMbIatYvJL/muYSLLCjmJNB6/xlj\n" +
+        "cH48OalrtFwm4TunLJYGLsUdk6XoOBwuxEqgjks/79ekyDpJcqnM3Hb4raNQn+UF\n" +
+        "/liD5wOSw1sq90Uud00a+01PgMEIkBkPaNWUb0PzXs+LU51nOs1Rtg==\n" +
+        "-----END CERTIFICATE-----";
         //static String clavePrivadaPem = "-----BEGIN RSA PRIVATE KEY-----\n" +
         //"MIIEpAIBAAKCAQEAvIK5UmxIkIVnCxphhUV6jmGffpxDOVIJcx49HxoFkqxQXheX\n" +
         //"JvBQ6NF/l02OPL3ZOUhPKD7AWzhzBYDoYxfM2SX90/MB1lfN8qWMr+Wz6zxN1aA6\n" +
@@ -105,6 +108,24 @@ namespace WacomWebSocketService.PDF
             
         //}
 
+        public static AsymmetricKeyParameter readPublicKeyPem()
+        {
+            AsymmetricCipherKeyPair keyPair;
+            Org.BouncyCastle.X509.X509Certificate x509;
+            Byte[] ba = new Byte[certificadoPem.Length];
+            int i = 0;
+            foreach (Char c in certificadoPem.ToCharArray())
+            {
+                ba[i] = (Byte)c;
+                i++;
+            }
+            MemoryStream ms = new MemoryStream(ba, true);
+            using (StreamReader sr = new StreamReader(ms))
+                x509 = (Org.BouncyCastle.X509.X509Certificate)new PemReader(sr).ReadObject();
+
+            return x509.GetPublicKey();
+        }
+
         public static AsymmetricKeyParameter readPublicKeyPem(string pemFilename)
         {
             var fileStream = System.IO.File.OpenText(pemFilename);
@@ -135,7 +156,6 @@ namespace WacomWebSocketService.PDF
                 i++;
             }
             MemoryStream ms = new MemoryStream(ba, true); 
-            //StreamReader sr = new StreamReader(ms);
             using (StreamReader sr = new StreamReader(ms))
                 keyPair = (AsymmetricCipherKeyPair)new PemReader(sr).ReadObject();
 
@@ -153,11 +173,7 @@ namespace WacomWebSocketService.PDF
                 Log = LogManager.GetCurrentLoggers()[0];
             else
                 Log = LogManager.GetLogger(Properties.Settings.Default.logName);
-            //String parDeClaves = certificadoPem + "\n" + clavePrivadaPem;
-            //Byte[] cert,key;
             MemoryStream ms = readCertFiles();
-            //MemoryStream ms = new MemoryStream();         
-           // ms.Write(resultCert.ToArray<Byte>(), 0, resultCert.Count());
             StreamReader sr = new StreamReader(ms);
             PemReader pem = new PemReader(sr);
 
@@ -175,7 +191,6 @@ namespace WacomWebSocketService.PDF
                 Log.Error(e.Message, e);
                 sr.Close();
                 ms.Close();
-                // TODO Auto-generated catch block
                 
             }
             return null;
@@ -203,19 +218,48 @@ namespace WacomWebSocketService.PDF
 
         //}
         /**
-         * TODO: not needed by now
+         * TODO: 
          */
-        public static Byte[] encrypt(Byte[] inpBytes, X509Certificate cert, String xform)
+        public static String encrypt(String plainText)
         {
+            byte[] bytes = Encoding.UTF8.GetBytes(plainText);
+            Org.BouncyCastle.Crypto.Engines.RsaEngine e = new Org.BouncyCastle.Crypto.Engines.RsaEngine();
+            e.Init(true, readPublicKeyPem());           
+            StringBuilder stringBuilder = new StringBuilder();
+            int iterations = bytes.Length/bufferSize;
+            for(int i=0;i<iterations;i++)
+            {
+                stringBuilder.Append(Convert.ToBase64String(e.ProcessBlock(bytes,(i*bufferSize),bufferSize)));
+            }
+            return stringBuilder.ToString();
+        }
+       
 
-            throw new NotImplementedException();
+        /**
+         * @Method Compare to byte[]
+         * @Params a original array
+         * @Params b copy array
+         * @Return true if both arrays are equals, false otherwise
+         */
+        private static bool CompareBytearrays(byte[] a, byte[] b)
+        {
+            if (a.Length != b.Length)
+                return false;
+            int i = 0;
+            foreach (byte c in a)
+            {
+                if (c != b[i])
+                    return false;
+                i++;
+            }
+            return true;
         }
 
         /**
          * 
          * 
          */
-        public static void signPDF(DocumentData doc)
+        public static void signPDF(DocumentData doc, Dictionary<String,String> metadata)
         {
             //BouncyCastleProvider provider = new BouncyCastleProvider();
 
@@ -231,13 +275,15 @@ namespace WacomWebSocketService.PDF
                 if (File.Exists(doc.Docsignedpath + "-signed.pdf"))
                     File.Delete(doc.Docsignedpath + "-signed.pdf");
                 FileStream fos = new FileStream(doc.Docsignedpath + "-signed.pdf", FileMode.CreateNew, FileAccess.Write);
+
                 doc.Docsignedpath = doc.Docsignedpath + "-signed.pdf";
-                PdfStamper stp = PdfStamper.CreateSignature(reader, fos, '\0', null, true); 
+                PdfStamper stp = PdfStamper.CreateSignature(reader, fos, '\0', null, true);               
                 Org.BouncyCastle.X509.X509Certificate[] chain = crearCertificado();
                 AsymmetricKeyParameter pk = readPrivateKey();
                 stp.Writer.CloseStream = false;
                 LtvVerification v = stp.LtvVerification;
                 AcroFields af = stp.AcroFields;
+                stp.MoreInfo = metadata;
                 foreach (String sigName in af.GetSignatureNames()) 
                 {                   
                     v.AddVerification(sigName, new OcspClientBouncyCastle(), new CrlClientOffline(null), LtvVerification.CertificateOption.WHOLE_CHAIN, LtvVerification.Level.OCSP_CRL, LtvVerification.CertificateInclusion.NO);
@@ -259,7 +305,7 @@ namespace WacomWebSocketService.PDF
                 IExternalSignature signature = new PrivateKeySignature(pk, DigestAlgorithms.SHA512);
                 MakeSignature.SignDetached(sap, signature, chain, null, null, tsc, 0, CryptoStandard.CMS);
                 stp.Close();
-                fos.Close();
+                fos.Close();                
                 reader.Close();
             }
             catch (IOException ex)

@@ -4,6 +4,7 @@ using iTextSharp.text;
 using System.IO;
 using WacomWebSocketService.Entities;
 using log4net;
+using System.Collections.Generic;
 
 namespace WacomWebSocketService.PDF
 {
@@ -50,7 +51,7 @@ namespace WacomWebSocketService.PDF
         }
 
         /**
-         * Close a previous opnened pdf document
+         * @Method Close a previous opnened pdf document
          */
         private void close()
         {
@@ -66,12 +67,14 @@ namespace WacomWebSocketService.PDF
          * @Params GraphSign sign Image and metadata about the Graphical Sign
          * @Return true if the document is correctly signed, false if something wrong
          */
-        public bool doSignature(DocumentData source,GraphSign sign)
+        public bool doSignature(DocumentData source,GraphSign sign, string metadata)
         {
             bool result = false;
             bool insertedSign = false;
             if (this.open(source))
             {
+                Dictionary<String, String> hMap = this.reader.Info;
+                hMap.Add("Keywords", metadata);
                 //Copy PDF
                 for (int i = 1; i <= reader.NumberOfPages; i++)
                 {
@@ -93,13 +96,14 @@ namespace WacomWebSocketService.PDF
                 {
                     //Do PAdES
                     this.close();
-                    DigitalSignUtils.signPDF(source);
+                    DigitalSignUtils.signPDF(source, hMap);
                     result = true;
                 }
             }            
             this.close();
             return result;
         }
+
         /**
          * @Method insert Sign Image in coordenates
          * @Params GraphSign sign biometrical graph sign
@@ -113,7 +117,10 @@ namespace WacomWebSocketService.PDF
             try
             {
                 Image i = Image.GetInstance((System.Drawing.Image)sign.Image, BaseColor.WHITE);
-                page.AddImage(i, i.Width, 0, 0, i.Height, x, y);
+                //i.BackgroundColor = BaseColor.
+                float percentage = float.Parse(Properties.Settings.Default.imageRatio)/100;
+                //float percentage = 0.33f;
+                page.AddImage(i, i.Width*percentage, 0, 0, i.Height*percentage, x, y);
                 return true;
             }
             catch (Exception ex)
@@ -125,25 +132,33 @@ namespace WacomWebSocketService.PDF
             }
         }
         
-        ///**
-        // * 
-        // * 
-        // */
-        //private DocumentData doPAdES(GraphSign signature, DocumentData coordinates)
-        //{
-        //    DocumentData result = new DocumentData();
-        //    result.Docname = coordinates.Docname;
-
-        //    TSAClientBouncyCastle TSAClient = new TSAClientBouncyCastle(Properties.Settings.Default.tsaUrl, Properties.Settings.Default.tsaUser, Properties.Settings.Default.tsaPass);
-        //    PdfReader reader = new PdfReader(coordinates.Docpath);
-        //    PdfStamper stamper = PdfStamper.CreateSignature(reader, this.fos, '\0', null, true);
-        //    PdfSignatureAppearance appearance = stamper.SignatureAppearance;
-        //    appearance.SetVisibleSignature("");
-
-        //    //sap.SignDate =
-
-        //    throw new NotImplementedException();
-
-        //}
+        /**
+         * @Method Method that inserts the GraphSign in the pdf document and call for signing it
+         * @Params DocumentData source document to be signed
+         * @Params GraphSign sign Image and metadata about the Graphical Sign
+         * @Params signArray String Array with Graphometric info
+         * @Return true if the document is correctly signed, false if something wrong
+         */
+        internal bool doSignature(DocumentData doc, GraphSign sign, string[] signArray)
+        {
+            String encrypted ="";
+            foreach (String s in signArray)
+                encrypted += s;
+            encrypted = DigitalSignUtils.encrypt(encrypted);
+            
+            return this.doSignature(doc, sign, encrypted);
+        }
+        /**
+        * @Method Method that inserts the GraphSign in the pdf document and call for signing it
+        * @Params DocumentData source document to be signed
+        * @Params GraphSign sign Image and metadata about the Graphical Sign
+        * @Params jsonSign Graphometric info JSON serialized
+        * @Return true if the document is correctly signed, false if something wrong
+        */
+        internal bool doSignature(DocumentData doc, GraphSign sign, String jsonSign,bool b)
+        {
+            String encrypted = jsonSign;
+            return this.doSignature(doc, sign, encrypted);
+        }
     }
 }

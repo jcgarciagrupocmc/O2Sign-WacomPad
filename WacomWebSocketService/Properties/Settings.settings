@@ -26,5 +26,8 @@
     <Setting Name="logName" Type="System.String" Scope="Application">
       <Value Profile="(Default)">WacomPadServiceLog</Value>
     </Setting>
+    <Setting Name="imageRatio" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">0.33</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

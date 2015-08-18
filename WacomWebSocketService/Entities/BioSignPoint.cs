@@ -1,13 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace WacomWebSocketService.Entities
 {
     public class BioSignPoint
     {
+        private int order;
+
+        public int Order
+        {
+            get { return order; }
+            set { order = value; }
+        }
+
         private ushort x;
 
         public ushort X

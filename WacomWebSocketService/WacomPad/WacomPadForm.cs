@@ -28,6 +28,7 @@ namespace WacomWebSocketService.WacomPad
             }
         };
 
+
         private Pen m_penInk;  // cached object.
 
         // The isDown flag is used like this:
@@ -55,7 +56,7 @@ namespace WacomWebSocketService.WacomPad
             return new PointF((float)penData.X * this.ClientSize.Width / m_capability.tabletMaxX, (float)penData.Y * this.ClientSize.Height / m_capability.tabletMaxY);
         }
 
-
+        private int order;
 
         private Point tabletToScreen(BioSignPoint penData)
         {
@@ -112,7 +113,7 @@ namespace WacomWebSocketService.WacomPad
             if (this.sign != null)
             {
 
-                this.sign.Points.Clear();
+                this.sign.ClearPoints();                
             }           
                 clearScreen();
         }
@@ -416,7 +417,7 @@ namespace WacomWebSocketService.WacomPad
 
                 // The pen is down, store it for use later.
                 if (m_isDown == -1)
-                    this.sign.Points.Add(WacomPadUtils.toBioSignPoint(penData));
+                    this.sign.addPoint(WacomPadUtils.toBioSignPoint(penData));
             }
             else
             {
@@ -443,7 +444,7 @@ namespace WacomWebSocketService.WacomPad
 
                 // Add up data once we have collected some down data.
                 if ((this.sign!= null)&&(this.sign.Points.Count != 0))
-                    this.sign.Points.Add(WacomPadUtils.toBioSignPoint(penData));
+                    this.sign.addPoint(WacomPadUtils.toBioSignPoint(penData));
             }
         }
 

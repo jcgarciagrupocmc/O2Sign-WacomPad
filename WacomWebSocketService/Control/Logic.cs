@@ -191,9 +191,26 @@ namespace WacomWebSocketService.Control
             if(this.padController.checkPadConnected())
             {
                 GraphSign sign = this.padController.padSigning();
-                return this.pdfController.doSignature(doc, sign);
+                String jsonSign = JsonConvert.SerializeObject(sign.Points);
+                String[] signArray = this.getSignString(sign);
+                return this.pdfController.doSignature(doc, sign,signArray);
             }
             return false; 
+        }
+
+        /**
+         * 
+         */
+        private String[] getSignString(GraphSign sign)
+        {
+            String[] result = new String[sign.Points.Count];
+            int i = 0;
+            foreach (BioSignPoint point in sign.Points)
+            {
+                result[i] = "" + point.Order + "," + point.X + "," + point.Y + "," + point.Pressure + "," + point.Time.Ticks;
+                i++;
+            }
+            return result;
         }
         /**
          * @Method Search document and call for signing
@@ -235,6 +252,7 @@ namespace WacomWebSocketService.Control
             {
                 String url, jsonData;
                 dynamic obj = JsonConvert.DeserializeObject(message);
+                
                 switch ((int)obj.Type)
                 {
                     //Processing connection, handshake and register message from websocket
@@ -246,8 +264,13 @@ namespace WacomWebSocketService.Control
                         {
                             url = String.Format(WSMethods.GET_DOCS_BY_OPERATION, obj.idFile);
                             jsonData = this.restController.doGet(url, null);
-                            this.operation = this.newOperation(jsonData);
-                            return JsonConvert.SerializeObject(this.wsController.createOperationListResponse(jsonData));
+                            if (jsonData != String.Empty)
+                            {
+                                this.operation = this.newOperation(jsonData);
+                                return JsonConvert.SerializeObject(this.wsController.createOperationListResponse(jsonData));
+                            }
+                            else
+                                return JsonConvert.SerializeObject(this.wsController.createErrorResponse());
                         }
                         else
                             return JsonConvert.SerializeObject(this.wsController.createErrorResponse());
@@ -255,7 +278,7 @@ namespace WacomWebSocketService.Control
                     case (int)CommandType.GetFile:
                         if (obj.idFile != null)
                         {                            
-                                return this.getPdfUnsigned(obj.idFile);                                                                                                              
+                                return this.getPdfUnsigned((String)obj.idFile);                                                                                                              
                         }
                         else
                         {
@@ -267,7 +290,7 @@ namespace WacomWebSocketService.Control
                     case (int)CommandType.GetSignedFile:
                         if (obj.idFile != null)
                         {
-                            return this.getPdfSigned(obj.idFile);
+                            return this.getPdfSigned((String)obj.idFile);
 
                         }
                         else
@@ -301,6 +324,16 @@ namespace WacomWebSocketService.Control
                             Log.Error("Incorrect Parameter");
                             return JsonConvert.SerializeObject(this.wsController.createErrorResponse());
                         }
+                    case (int)CommandType.CancelOperation:
+                        if (obj.idFile != null)
+                        {
+                            return JsonConvert.SerializeObject(this.wsController.createOperationOKResponse());
+                        }
+                        else
+                        {
+                            Log.Error("Incorrect Parameter");
+                            return JsonConvert.SerializeObject(this.wsController.createErrorResponse());
+                        }
                             
                 }
             }
@@ -319,11 +352,16 @@ namespace WacomWebSocketService.Control
          */
         private DocumentData getDocuemnt(String idfile)
         {
-            List<DocumentData> array = (List<DocumentData>)this.operation.Where(d => (d.Uuid.Equals(idfile)));
-            if (array.Count > 0)
-                return array[0];
-            else
-                return null;
+            DocumentData result = null;
+            foreach(DocumentData doc in this.operation)
+            {
+                if(doc.Uuid.ToString().Equals(idfile)){
+                    result = doc;
+                    break;
+                }
+                    
+            }
+            return result;
         }
 
 

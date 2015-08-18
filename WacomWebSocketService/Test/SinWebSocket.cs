@@ -40,7 +40,7 @@ namespace WacomWebSocketService.Test
             
             DocumentData doc = new DocumentData();
             doc.Idoperation = "1";
-            doc.Docname = "pdf1.pdf";
+            doc.Docname = "pdf1_pdf-signed.pdf";
             doc.Docpath = Properties.Settings.Default.tempPath + "\\" + doc.Idoperation + "\\" + doc.Docname;
             doc.Docsignedpath = Properties.Settings.Default.tempPath + "\\" + doc.Idoperation + "\\signed\\" + doc.Docname;
             //doc.X = 500;
@@ -49,7 +49,7 @@ namespace WacomWebSocketService.Test
             list.Add(doc);
             doc = new DocumentData();
             doc.Idoperation = "1";
-            doc.Docname = "pdf5.pdf";
+            doc.Docname = "TSA_Signed_type.pdf";
             doc.Docpath = Properties.Settings.Default.tempPath + "\\" + doc.Idoperation + "\\" + doc.Docname;
             doc.Docsignedpath = Properties.Settings.Default.tempPath + "\\" + doc.Idoperation + "\\signed\\" + doc.Docname;
             //doc.X = 100;

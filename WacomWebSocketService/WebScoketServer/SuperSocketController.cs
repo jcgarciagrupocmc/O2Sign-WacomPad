@@ -185,7 +185,7 @@ namespace WacomWebSocketService.WebScoketServer
          */
         public Response createSignedFileResponse()
         {
-            return new Response { Type = ResponseType.OperationList };
+            return new Response { Type = ResponseType.SignedFile };
         }
         /**
          * @Method Create a new WebSocket Response of type OperationCanceled for CancelOperation Command
