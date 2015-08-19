@@ -298,7 +298,7 @@ namespace WacomWebSocketService.PDF
                 //Add timestamp
                 TSAClientBouncyCastle tsc  = new TSAClientBouncyCastle(Properties.Settings.Default.tsaUrl, Properties.Settings.Default.tsaUser, Properties.Settings.Default.tsaPass, contentEstimated, DigestAlgorithms.SHA512);
                 // Creating the signature
-                LtvTimestamp.Timestamp(sap, tsc, null);
+                //LtvTimestamp.Timestamp(sap, tsc, null);
                 //Org.BouncyCastle.Crypto.BouncyCastleDigest messageDigest = MessageDigest.getInstance("SHA1");
                 //IExternalDigest digest = new Org.BouncyCastle.Crypto.BouncyCastleDigest();
                 //RSACryptoServiceProvider crypt = (RSACryptoServiceProvider)cert.PrivateKey;

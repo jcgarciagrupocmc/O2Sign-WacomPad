@@ -37,11 +37,22 @@ namespace WacomWebSocketService.PDF
          */
         private bool open(DocumentData pdfDoc)
         {
+            String path;
+            pdfDoc.Docsignedpath = Properties.Settings.Default.tempPath + pdfDoc.Idoperation + "\\signed\\" + pdfDoc.Docname;
+            if (pdfDoc.documentHasBeenSigned())
+            {
+                path = pdfDoc.Docpath + "-signed.pdf";
+                //signedpath = 
+            }
+            else
+            {
+                path = pdfDoc.Docpath;
+            }
             if (File.Exists(pdfDoc.Docpath))
             {
                 doc = new Document();
-                reader = new PdfReader(pdfDoc.Docpath);
-                fos = new FileStream(pdfDoc.Docsignedpath, FileMode.Create,FileAccess.Write);
+                reader = new PdfReader(path);
+                fos = new FileStream(pdfDoc.Docsignedpath, FileMode.Create, FileAccess.Write);
                 writer = PdfWriter.GetInstance(doc, fos);
                 doc.Open();
                 doc.AddDocListener(writer);
@@ -65,16 +76,21 @@ namespace WacomWebSocketService.PDF
          * @Method Method that inserts the GraphSign in the pdf document and call for signing it
          * @Params DocumentData source document to be signed
          * @Params GraphSign sign Image and metadata about the Graphical Sign
+         * @Params signer data
          * @Return true if the document is correctly signed, false if something wrong
          */
-        public bool doSignature(DocumentData source,GraphSign sign, string metadata)
+        public bool doSignature(DocumentData source,GraphSign sign, string metadata, Signer signer)
         {
             bool result = false;
             bool insertedSign = false;
             if (this.open(source))
             {
                 Dictionary<String, String> hMap = this.reader.Info;
-                hMap.Add("Keywords", metadata);
+                String keywords = "";
+                hMap.TryGetValue("Keywords",out keywords);
+                keywords += metadata;
+                hMap.Remove("Keywords");
+                hMap.Add("Keywords", keywords);
                 //Copy PDF
                 for (int i = 1; i <= reader.NumberOfPages; i++)
                 {
@@ -89,14 +105,17 @@ namespace WacomWebSocketService.PDF
                     else
                         cb.AddTemplate(importedPage, 1.0F, 0, 0, 1.0F, 0, 0);
                     //Insert Graph image on coordenates
-                    if (i == source.Page)
-                        insertedSign = this.insertGraphSign(sign, cb, source.X, source.Y);
+                    if (i == signer.Page)
+                        insertedSign = this.insertGraphSign(sign, cb, signer.X, signer.Y);
                 }
                 if (insertedSign)
                 {
                     //Do PAdES
                     this.close();
                     DigitalSignUtils.signPDF(source, hMap);
+                    if(File.Exists(source.Docpath+"-signed.pdf"))
+                        File.Delete(source.Docpath+"-signed.pdf");
+                    File.Copy(source.Docsignedpath, source.Docpath + "-signed.pdf");
                     result = true;
                 }
             }            
@@ -137,28 +156,30 @@ namespace WacomWebSocketService.PDF
          * @Params DocumentData source document to be signed
          * @Params GraphSign sign Image and metadata about the Graphical Sign
          * @Params signArray String Array with Graphometric info
+         * @Params signer data
          * @Return true if the document is correctly signed, false if something wrong
          */
-        internal bool doSignature(DocumentData doc, GraphSign sign, string[] signArray)
+        internal bool doSignature(DocumentData doc, GraphSign sign, string[] signArray, Signer signer)
         {
             String encrypted ="";
             foreach (String s in signArray)
                 encrypted += s;
             encrypted = DigitalSignUtils.encrypt(encrypted);
             
-            return this.doSignature(doc, sign, encrypted);
+            return this.doSignature(doc, sign, encrypted,signer);
         }
         /**
         * @Method Method that inserts the GraphSign in the pdf document and call for signing it
         * @Params DocumentData source document to be signed
         * @Params GraphSign sign Image and metadata about the Graphical Sign
         * @Params jsonSign Graphometric info JSON serialized
+        * @Params signer data
         * @Return true if the document is correctly signed, false if something wrong
         */
-        internal bool doSignature(DocumentData doc, GraphSign sign, String jsonSign,bool b)
+        internal bool doSignature(DocumentData doc, GraphSign sign, String jsonSign, Signer signer, bool b)
         {
             String encrypted = jsonSign;
-            return this.doSignature(doc, sign, encrypted);
+            return this.doSignature(doc, sign, encrypted,signer);
         }
     }
 }

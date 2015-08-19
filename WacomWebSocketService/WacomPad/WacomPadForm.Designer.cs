@@ -37,8 +37,13 @@
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.ClientSize = new System.Drawing.Size(284, 261);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "WacomPadForm";
+            this.ShowIcon = false;
+            this.ShowInTaskbar = false;
             this.Text = "WacomPadForm";
+            this.TopMost = true;
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form2_FormClosed);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.Form2_Paint);
             this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Form2_MouseClick);

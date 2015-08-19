@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace WacomWebSocketService.Entities
 {
@@ -32,16 +33,15 @@ namespace WacomWebSocketService.Entities
             set { docpath = value; }
         }
         //Document metadata part1
-        private String docmetadata;
+        private List<Signer> docmetadata;
         //docmetadata property
-        public String Docmetadata
+        public List<Signer> Docmetadata
         {
             get { return docmetadata; }
             set { docmetadata = value; }
         }
         //Document metadata part2
         private String docmetadata2;
-
         //docmetadata2 property
         public String Docmetadata2
         {
@@ -87,6 +87,15 @@ namespace WacomWebSocketService.Entities
         {
             get { return page; }
             set { page = value; }
+        }
+        public bool documentHasBeenSigned()
+        {
+            foreach (Signer s in this.docmetadata)
+            {
+                if (s.Signed)
+                    return true;
+            }
+            return false;
         }
     }
 }

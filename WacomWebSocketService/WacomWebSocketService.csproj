@@ -84,6 +84,7 @@
     <Compile Include="Consts\WSMethods.cs" />
     <Compile Include="Control\ControlTools.cs" />
     <Compile Include="Control\Logic.cs" />
+    <Compile Include="Control\Parser.cs" />
     <Compile Include="DocumentRecieverService.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -91,9 +92,11 @@
       <DependentUpon>DocumentRecieverService.cs</DependentUpon>
     </Compile>
     <Compile Include="Entities\BioSignPoint.cs" />
+    <Compile Include="Entities\DocType.cs" />
     <Compile Include="Entities\GraphSign.cs" />
     <Compile Include="Entities\DatosCaptura.cs" />
     <Compile Include="Entities\DocumentData.cs" />
+    <Compile Include="Entities\Signer.cs" />
     <Compile Include="Exceptions\IncorrectMessageException.cs" />
     <Compile Include="JSONMessageConverter\MessageConverter.cs" />
     <Compile Include="JSONMessageConverter\WebSocketMC.cs" />

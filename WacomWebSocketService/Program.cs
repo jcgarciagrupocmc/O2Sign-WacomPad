@@ -19,7 +19,7 @@ namespace WacomWebSocketService
             System.IO.Directory.SetCurrentDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
             Logic logic = Logic.getInstance();
             //Test.SinWebSocket test = new Test.SinWebSocket();
-            //test.getJsonOperation("20150810113119");
+            //test.getJsonOperation("20150819125323");
             //test.signPDF();
             logic.onStart();
             //SuperSocketController ssController = new SuperSocketController();

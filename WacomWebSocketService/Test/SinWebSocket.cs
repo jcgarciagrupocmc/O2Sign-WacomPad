@@ -25,42 +25,12 @@ namespace WacomWebSocketService.Test
             List<DocumentData> list = logic.newOperation(jsonData);
             foreach (DocumentData doc in list)
             {
-                logic.signPdf(doc);
+                for (int i = 0; i < doc.Docmetadata.Count;i++)
+                    logic.signPdf(doc,i);
             }
             logic.uploadSignedOperation(list);
 
             return jsonData;
-        }
-        /**
-         * @Method creates 2 documents from 2 known PDF files on disk and try to sign them
-         */
-        public void signPDF()
-        {
-            List<DocumentData> list = new List<DocumentData>();
-            
-            DocumentData doc = new DocumentData();
-            doc.Idoperation = "1";
-            doc.Docname = "pdf1_pdf-signed.pdf";
-            doc.Docpath = Properties.Settings.Default.tempPath + "\\" + doc.Idoperation + "\\" + doc.Docname;
-            doc.Docsignedpath = Properties.Settings.Default.tempPath + "\\" + doc.Idoperation + "\\signed\\" + doc.Docname;
-            //doc.X = 500;
-            //doc.Y = 100;
-            //doc.Page = 2;
-            list.Add(doc);
-            doc = new DocumentData();
-            doc.Idoperation = "1";
-            doc.Docname = "TSA_Signed_type.pdf";
-            doc.Docpath = Properties.Settings.Default.tempPath + "\\" + doc.Idoperation + "\\" + doc.Docname;
-            doc.Docsignedpath = Properties.Settings.Default.tempPath + "\\" + doc.Idoperation + "\\signed\\" + doc.Docname;
-            //doc.X = 100;
-            //doc.Y = 400;
-            //doc.Page = 1;
-            list.Add(doc);
-            Logic logic = Logic.getInstance();
-            foreach (DocumentData d in list)
-            {
-                logic.signPdf(d);
-            }
         }
         /**
          * @Method read certificate files from embebed resources and print them on console
