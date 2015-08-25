@@ -88,7 +88,7 @@ namespace WacomWebSocketService.PDF
                 Dictionary<String, String> hMap = this.reader.Info;
                 String keywords = "";
                 hMap.TryGetValue("Keywords",out keywords);
-                keywords += metadata;
+                keywords += metadata+Properties.Settings.Default.stringSeparator;
                 hMap.Remove("Keywords");
                 hMap.Add("Keywords", keywords);
                 //Copy PDF
@@ -135,7 +135,9 @@ namespace WacomWebSocketService.PDF
         {
             try
             {
-                Image i = Image.GetInstance((System.Drawing.Image)sign.Image, BaseColor.WHITE);
+                sign.Image.MakeTransparent(System.Drawing.Color.White);
+                sign.Image.Save(Properties.Settings.Default.tempPath + "test.png", System.Drawing.Imaging.ImageFormat.Png);                
+                Image i = Image.GetInstance((System.Drawing.Image)sign.Image, new BaseColor(System.Drawing.Color.Transparent));
                 //i.BackgroundColor = BaseColor.
                 float percentage = float.Parse(Properties.Settings.Default.imageRatio)/100;
                 //float percentage = 0.33f;

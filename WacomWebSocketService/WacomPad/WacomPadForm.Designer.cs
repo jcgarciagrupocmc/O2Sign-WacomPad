@@ -34,17 +34,18 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.ClientSize = new System.Drawing.Size(284, 261);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Cursor = System.Windows.Forms.Cursors.Default;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "WacomPadForm";
             this.ShowIcon = false;
-            this.ShowInTaskbar = false;
-            this.Text = "WacomPadForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "WacomPad";
             this.TopMost = true;
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form2_FormClosed);
+            this.Shown += new System.EventHandler(this.WacomPadForm_Shown);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.Form2_Paint);
             this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Form2_MouseClick);
             this.ResumeLayout(false);

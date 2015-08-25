@@ -13,6 +13,13 @@ namespace WacomWebSocketService.WacomPad
         private wgssSTU.ICapability m_capability;
         private wgssSTU.IInformation m_information;
 
+        private String title;
+
+        public String Title
+        {
+            get { return title; }
+            set { title = value; }
+        }
         // In order to simulate buttons, we have our own Button class that stores the bounds and event handler.
         // Using an array of these makes it easy to add or remove buttons as desired.
         private delegate void ButtonClick();
@@ -49,6 +56,17 @@ namespace WacomWebSocketService.WacomPad
         // As per the file comment, there are three coordinate systems to deal with.
         // To help understand, we have left the calculations in place rather than optimise them.
 
+        //Disable close button
+        private const int CP_NOCLOSE_BUTTON = 0x200;
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                CreateParams myCp = base.CreateParams;
+                myCp.ClassStyle = myCp.ClassStyle | CP_NOCLOSE_BUTTON;
+                return myCp;
+            }
+        }
 
         private PointF tabletToClient(BioSignPoint penData)
         {
@@ -191,9 +209,9 @@ namespace WacomWebSocketService.WacomPad
                 m_btns[1].Bounds = new Rectangle(x, h1, w, h2);
                 m_btns[2].Bounds = new Rectangle(x, h1 + h2, w, h3);
             }
-            m_btns[0].Text = "OK";
-            m_btns[1].Text = "Clear";
-            m_btns[2].Text = "Cancel";
+            m_btns[0].Text = "Aceptar";
+            m_btns[1].Text = "Borrar";
+            m_btns[2].Text = "Cancelar";
             m_btns[0].Click = new EventHandler(btnOk_Click);
             m_btns[1].Click = new EventHandler(btnClear_Click);
             m_btns[2].Click = new EventHandler(btnCancel_Click);
@@ -550,7 +568,7 @@ namespace WacomWebSocketService.WacomPad
                 graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.High;
                 graphics.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
                 graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-
+                graphics.Clear(Color.Transparent);
                 brush = new SolidBrush(Color.White);
                 graphics.FillRectangle(brush, 0, 0, rect.Width, rect.Height);
 
@@ -581,6 +599,13 @@ namespace WacomWebSocketService.WacomPad
         public GraphSign getSign()
         {
             return this.sign;
+        }
+
+        private void WacomPadForm_Shown(object sender, EventArgs e)
+        {
+            this.Text = this.title;
+            //WacomPadUtils.BringToFrontCustom(this);
+            this.BringToFront();
         }
 
         //private void Form2_MouseClick(object sender, MouseEventArgs e)

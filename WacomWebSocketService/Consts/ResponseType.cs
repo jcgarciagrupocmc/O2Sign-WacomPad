@@ -23,6 +23,8 @@ namespace WacomWebSocketService.Consts
         //ResponseMessage for a UploadOperation Command OK
         OperationOK = 5,
         //ResponseMessage for a CancelOperation Command OK
-        OperationCanceled = 6
+        OperationCanceled = 6,
+        //ResponseMessage for Remaining Signers
+        RemainingSigners = 7
     }
 }

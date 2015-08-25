@@ -14,7 +14,7 @@ namespace WacomWebSocketService.WacomPad
          * @Method calls the Wacom Pad UI for signing and returns the sign data
          * @Return GraphSign if confirmed, null if cancel by the user
          */
-        public GraphSign padSigning()
+        public GraphSign padSigning(Signer signer)
         {
 
             ILog Log;
@@ -24,11 +24,13 @@ namespace WacomWebSocketService.WacomPad
                 Log = LogManager.GetLogger(Properties.Settings.Default.logName);
             try
             {
+
                 wgssSTU.UsbDevices usbDevices = new wgssSTU.UsbDevices();
                 wgssSTU.IUsbDevice usbDevice = usbDevices[0]; // select a device
 
                 WacomPadForm demo = new WacomPadForm(usbDevice);
-
+                demo.Title = signer.Nombre;
+                //WacomPadUtils.BringToFrontCustom(demo);
                 demo.ShowDialog();
                 GraphSign result = demo.getSign();
                 demo.Dispose();

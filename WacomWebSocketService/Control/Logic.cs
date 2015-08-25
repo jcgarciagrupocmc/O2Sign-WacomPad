@@ -80,6 +80,7 @@ namespace WacomWebSocketService.Control
                 this.Log = LogManager.GetCurrentLoggers()[0];
             else
                 this.Log = LogManager.GetLogger(Properties.Settings.Default.logName);
+            Log.Error("Test");
 
         }
         /**
@@ -141,7 +142,12 @@ namespace WacomWebSocketService.Control
             DocumentData doc = this.getDocuemnt(uuid);
             if (doc != null)
             {
-                return Parser.serializeObject(this.wsController.createFileResponse(ControlTools.fileToBase64(doc.Docpath)));
+                
+                List<Signer> signers = this.getRemainingSigners(doc);
+                if (doc.documentHasBeenSigned())
+                    return Parser.serializeObject(this.wsController.createFileResponse(ControlTools.fileToBase64(doc.Docsignedpath), Parser.serializeObject(signers)));
+                else
+                    return Parser.serializeObject(this.wsController.createFileResponse(ControlTools.fileToBase64(doc.Docpath), Parser.serializeObject(signers)));
             }
             else
             {
@@ -160,7 +166,9 @@ namespace WacomWebSocketService.Control
             DocumentData doc = this.getDocuemnt(uuid);
             if (doc != null)
             {
-                return Parser.serializeObject(this.wsController.createFileResponse(ControlTools.fileToBase64(doc.Docsignedpath)));
+                //List<Signer> signers = this.getRemainingSigners(doc);
+                List<Signer> signers = doc.Docmetadata;
+                return Parser.serializeObject(this.wsController.createFileResponse(ControlTools.fileToBase64(doc.Docsignedpath),Parser.serializeObject(signers)));
             }
             else
             {
@@ -175,15 +183,19 @@ namespace WacomWebSocketService.Control
          */
         internal bool signPdf(DocumentData doc, int signer)
         {
+            doc.Docmetadata[signer].Signed = false;
             if (this.padController.checkPadConnected())
             {
-                GraphSign sign = this.padController.padSigning();
-                String jsonSign = Parser.serializeObject(sign.Points);
-                String[] signArray = this.getSignString(sign);
-                doc.Docmetadata[signer].Signed = this.pdfController.doSignature(doc, sign, signArray, doc.Docmetadata[signer]);
+                GraphSign sign = this.padController.padSigning(doc.Docmetadata[signer]);
+                if (sign != null)
+                {
+                    String jsonSign = Parser.serializeObject(sign.Points);
+                    String[] signArray = this.getSignString(sign);
+                    doc.Docmetadata[signer].Signed = this.pdfController.doSignature(doc, sign, signArray, doc.Docmetadata[signer]);
+                }
+                
             }
-            else
-                doc.Docmetadata[signer].Signed = false;
+                
             return doc.Docmetadata[signer].Signed;
 
 
@@ -225,12 +237,33 @@ namespace WacomWebSocketService.Control
          * to the service for uploadsigned pdf foreach pdf document in the operation
          * @Params List<DocumentData> list a list of each Operation DocumentData
          */
-        //TODO: Pending for revision to make atomic operation
         internal bool uploadSignedOperation(List<DocumentData> list)
+        {
+            List<DatosCaptura> result = new List<DatosCaptura>();
+            if (!this.fullSigned(list))
+            {
+                return false;
+            }
+            foreach (DocumentData doc in list)
+            {               
+                result.Add(ControlTools.toDatosCaptura(doc));
+            }
+            
+                restController.doPost(WSMethods.UPLOAD_ALL_SIGNED_PDF, result);
+            return true;
+        }
+        /**
+         * 
+         */
+        internal bool fullSigned(List<DocumentData> list)
         {
             foreach (DocumentData doc in list)
             {
-                restController.doPost(WSMethods.UPLOAD_SIGNED_PDF, ControlTools.toDatosCaptura(doc));
+                foreach (Signer s in doc.Docmetadata)
+                {
+                    if (!s.Signed)
+                        return false;
+                }
             }
             return true;
         }
@@ -248,7 +281,14 @@ namespace WacomWebSocketService.Control
                 {
                     //Processing connection, handshake and register message from websocket
                     case (int)CommandType.Register:
-                        return Parser.serializeObject(this.wsController.createRegisterResponse());
+                        if (padController.checkPadConnected())
+                        {
+                            return Parser.serializeObject(this.wsController.createRegisterResponse());
+                        }
+                        else
+                        {
+                            return Parser.serializeObject(this.wsController.createErrorResponse());
+                        }
                      //Processing getOperation message from websocket
                     case (int)CommandType.GetOperation:
                         if (obj.idFile != null)
@@ -268,7 +308,7 @@ namespace WacomWebSocketService.Control
                     //Processing getUnsignedFile message from websocket
                     case (int)CommandType.GetFile:
                         if (obj.idFile != null)
-                        {                            
+                        {
                                 return this.getPdfUnsigned((String)obj.idFile);                                                                                                              
                         }
                         else
@@ -307,7 +347,7 @@ namespace WacomWebSocketService.Control
                             if (this.uploadSignedOperation(this.operation))
                                 return Parser.serializeObject(this.wsController.createOperationOKResponse());
                             else
-                                return Parser.serializeObject(this.wsController.createErrorResponse());
+                                return Parser.serializeObject(this.wsController.createRemainingSignersResponse());
 
                         }
                         else
@@ -356,6 +396,19 @@ namespace WacomWebSocketService.Control
             return result;
         }
 
+        /**
+         * @Method get the Document Signers that have not yet signed
+         * @Params Document to check Signers
+         * @Return List of Signers
+         */
+        private List<Signer> getRemainingSigners(DocumentData doc)
+        {
+            List<Signer> result = new List<Signer>();
+            foreach (Signer s in doc.Docmetadata)
+                if (!s.Signed)
+                    result.Add(s);
+            return result;
+        }
 
     }
 }

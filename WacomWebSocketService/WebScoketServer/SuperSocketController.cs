@@ -175,9 +175,9 @@ namespace WacomWebSocketService.WebScoketServer
          * 
          * @Return WebSocket Response Entity
          */
-        public Response createFileResponse(String file)
+        public Response createFileResponse(String file, String signers)
         {
-            return new Response { Type = ResponseType.File, Data = file };
+            return new Response { Type = ResponseType.File, Data = file, Data2 = signers };
         }
         /**
          * @Method Create a new WebSocket Response of type SignedFile
@@ -197,5 +197,13 @@ namespace WacomWebSocketService.WebScoketServer
         }
 
 
+        /**
+         * @Method Create a new WebSocket Response of type RemainingSigners for UploadOperation Command
+         * @Return WebSocket Response Entity 
+         */
+        internal object createRemainingSignersResponse()
+        {
+            return new Response { Type = ResponseType.RemainingSigners};
+        }
     }
 }

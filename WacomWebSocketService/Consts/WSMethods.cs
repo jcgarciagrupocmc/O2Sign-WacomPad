@@ -13,5 +13,7 @@ namespace WacomWebSocketService.Consts
         public static readonly String GET_DOCS_BY_OPERATION = "/getdocsbyoperation/{0}";
         // /uploadsignedpdf REST service URL
         public static readonly String UPLOAD_SIGNED_PDF = "/uploadsignedpdf";
+        // /uploadallsignedpdf REST service URL
+        public static readonly String UPLOAD_ALL_SIGNED_PDF = "/uploadallsignedpdf";
     }
 }

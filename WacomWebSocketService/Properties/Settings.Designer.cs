@@ -25,7 +25,7 @@ namespace WacomWebSocketService.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://146.148.4.166:8080/BioSign/rest/signservices")]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://146.148.117.127:8080/BioSign/rest/signservices")]
         public string host {
             get {
                 return ((string)(this["host"]));
@@ -97,10 +97,19 @@ namespace WacomWebSocketService.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0.33")]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.50")]
         public string imageRatio {
             get {
                 return ((string)(this["imageRatio"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("$$")]
+        public string stringSeparator {
+            get {
+                return ((string)(this["stringSeparator"]));
             }
         }
     }

@@ -21,6 +21,7 @@ namespace WacomWebSocketService
             //Test.SinWebSocket test = new Test.SinWebSocket();
             //test.getJsonOperation("20150819125323");
             //test.signPDF();
+            
             logic.onStart();
             //SuperSocketController ssController = new SuperSocketController();
             //ssController.open();
