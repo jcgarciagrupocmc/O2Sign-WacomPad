@@ -169,9 +169,9 @@ namespace WacomWebSocketService.PDF
         public static Org.BouncyCastle.X509.X509Certificate[] crearCertificado()
         {
             ILog Log;
-            if (LogManager.GetCurrentLoggers().Length > 0)
-                Log = LogManager.GetCurrentLoggers()[0];
-            else
+            //if (LogManager.GetCurrentLoggers().Length > 0)
+            //    Log = LogManager.GetCurrentLoggers()[0];
+            //else
                 Log = LogManager.GetLogger(Properties.Settings.Default.logName);
             MemoryStream ms = readCertFiles();
             StreamReader sr = new StreamReader(ms);
@@ -265,9 +265,9 @@ namespace WacomWebSocketService.PDF
 
             //  AddProvider(provider);
             ILog Log;
-            if (LogManager.GetCurrentLoggers().Length > 0)
-                Log = LogManager.GetCurrentLoggers()[0];
-            else
+            //if (LogManager.GetCurrentLoggers().Length > 0)
+            //    Log = LogManager.GetCurrentLoggers()[0];
+            //else
                 Log = LogManager.GetLogger(Properties.Settings.Default.logName);
             try
             {

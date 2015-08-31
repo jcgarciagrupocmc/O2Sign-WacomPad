@@ -18,9 +18,9 @@ namespace WacomWebSocketService.WacomPad
         {
 
             ILog Log;
-            if (LogManager.GetCurrentLoggers().Length > 0)
-                Log = LogManager.GetCurrentLoggers()[0];
-            else
+            //if (LogManager.GetCurrentLoggers().Length > 0)
+            //    Log = LogManager.GetCurrentLoggers()[0];
+            //else
                 Log = LogManager.GetLogger(Properties.Settings.Default.logName);
             try
             {
@@ -28,8 +28,9 @@ namespace WacomWebSocketService.WacomPad
                 wgssSTU.UsbDevices usbDevices = new wgssSTU.UsbDevices();
                 wgssSTU.IUsbDevice usbDevice = usbDevices[0]; // select a device
 
+                WacomPadForm.PresingString = String.Format(Properties.Settings.Default.presingModel, signer.Nombre, signer.Nif);
                 WacomPadForm demo = new WacomPadForm(usbDevice);
-                demo.Title = signer.Nombre;
+                demo.Title = String.Format(Properties.Settings.Default.presingModel, signer.Nombre, signer.Nif);
                 //WacomPadUtils.BringToFrontCustom(demo);
                 demo.ShowDialog();
                 GraphSign result = demo.getSign();
@@ -40,6 +41,7 @@ namespace WacomWebSocketService.WacomPad
             catch (Exception ex)
             {
                 Log.Error(ex.Message, ex);
+                throw ex;
                 return null;
             }
         }
@@ -49,8 +51,23 @@ namespace WacomWebSocketService.WacomPad
          */
         public bool checkPadConnected()
         {
-            wgssSTU.UsbDevices usbDevices = new wgssSTU.UsbDevices();
-            return (usbDevices.Count != 0);
+            ILog Log;
+            //if (LogManager.GetCurrentLoggers().Length > 0)
+            //    Log = LogManager.GetCurrentLoggers()[0];
+            //else
+                Log = LogManager.GetLogger(Properties.Settings.Default.logName);
+
+            try
+            {
+                wgssSTU.UsbDevices usbDevices = new wgssSTU.UsbDevices();
+                return (usbDevices.Count != 0);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex);
+                throw new Exception("error COM", ex);
+                return false;
+            }
         }
     }   
 }

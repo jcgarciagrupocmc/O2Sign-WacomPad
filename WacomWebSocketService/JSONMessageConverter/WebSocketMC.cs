@@ -16,9 +16,9 @@ namespace WacomWebSocketService.JSONMessageConverter
         {
 
             ILog Log;
-            if (LogManager.GetCurrentLoggers().Length > 0)
-                Log = LogManager.GetCurrentLoggers()[0];
-            else
+            //if (LogManager.GetCurrentLoggers().Length > 0)
+            //    Log = LogManager.GetCurrentLoggers()[0];
+            //else
                 Log = LogManager.GetLogger(Properties.Settings.Default.logName);
             try
             {

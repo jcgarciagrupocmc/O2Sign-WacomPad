@@ -13,6 +13,18 @@ namespace WacomWebSocketService.WacomPad
         private wgssSTU.ICapability m_capability;
         private wgssSTU.IInformation m_information;
 
+        private Button presignText;
+
+        private static String presingString;
+
+        public static String PresingString
+        {
+            get { return presingString; }
+            set { presingString = value; }
+        }
+       
+
+
         private String title;
 
         public String Title
@@ -138,7 +150,10 @@ namespace WacomWebSocketService.WacomPad
 
         public WacomPadForm(wgssSTU.IUsbDevice usbDevice)
         {
-
+            if (presingString != null)
+            {
+                presignText.Text = presingString;
+            }
             this.sign = new GraphSign();
             // This is a DPI aware application, so ensure you understand how .NET client coordinates work.
             // Testing using a Windows installation set to a high DPI is recommended to understand how
@@ -189,6 +204,7 @@ namespace WacomWebSocketService.WacomPad
                 int y = m_capability.screenHeight * 6 / 7;
                 int h = m_capability.screenHeight - y;
 
+                presignText.Bounds = new Rectangle(0, 0, m_capability.screenWidth, h);
                 m_btns[0].Bounds = new Rectangle(0, y, w1, h);
                 m_btns[1].Bounds = new Rectangle(w1, y, w2, h);
                 m_btns[2].Bounds = new Rectangle(w1 + w2, y, w3, h);
@@ -268,6 +284,9 @@ namespace WacomWebSocketService.WacomPad
                     // Anti-aliasing should be turned off for monochrome devices.
                     gfx.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SingleBitPerPixel;
                 }
+
+                gfx.DrawRectangle(Pens.Black, presignText.Bounds);
+                gfx.DrawString(presignText.Text, font, Brushes.Black, presignText.Bounds, sf);
 
                 // Draw the buttons
                 for (int i = 0; i < m_btns.Length; ++i)
@@ -544,12 +563,10 @@ namespace WacomWebSocketService.WacomPad
             {
                 Bitmap bitmap = GetImage(new Rectangle(0, 0, m_capability.screenWidth, m_capability.screenHeight));
                 this.sign.Image = bitmap;
-                string saveLocation = System.Environment.CurrentDirectory + "\\" + "signature_output.jpg";
-                bitmap.Save(saveLocation, ImageFormat.Jpeg);
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Exception: " + ex.Message);
+                MessageBox.Show("Exception: " + ex.Message+" "+ex.Source);
             }
         }
 
@@ -585,6 +602,10 @@ namespace WacomWebSocketService.WacomPad
 
                 retVal = bitmap;
                 bitmap = null;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Exception2: " + ex.Message + " " + ex.Source);
             }
             finally
             {

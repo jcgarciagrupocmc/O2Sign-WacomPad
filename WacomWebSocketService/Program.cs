@@ -16,25 +16,24 @@ namespace WacomWebSocketService
         /// </summary>
         static void Main()
         {
-            System.IO.Directory.SetCurrentDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
-            Logic logic = Logic.getInstance();
-            //Test.SinWebSocket test = new Test.SinWebSocket();
-            //test.getJsonOperation("20150819125323");
-            //test.signPDF();
+
+#if true
             
-            logic.onStart();
-            //SuperSocketController ssController = new SuperSocketController();
-            //ssController.open();
-            //while (true)
-            //{
-            //    continue;
-            //}
-            //ServiceBase[] ServicesToRun;
-            //ServicesToRun = new ServiceBase[] 
-            //{ 
-            //    new DocumentRecieverService() 
-            //};
-            //ServiceBase.Run(ServicesToRun);
+            //Test.SinWebSocket test = new Test.SinWebSocket();
+            //test.getJsonOperation("20150827115225");
+            //test.signPDF();
+            Logic logic = Logic.getInstance();
+            logic.onStart(); 
+
+#else            
+            ServiceBase[] ServicesToRun;
+            ServicesToRun = new ServiceBase[] 
+            { 
+                new DocumentRecieverService() 
+            };
+            ServiceBase.Run(ServicesToRun);
+#endif
+
         }
     }
 }

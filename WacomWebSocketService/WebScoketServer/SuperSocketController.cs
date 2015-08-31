@@ -4,6 +4,8 @@ using log4net;
 using WacomWebSocketService.Consts;
 using WacomWebSocketService.Exceptions;
 using SuperWebSocket;
+using WacomWebSocketService.Entities;
+using System.Collections.Generic;
 
 namespace WacomWebSocketService.WebScoketServer
 {
@@ -21,9 +23,9 @@ namespace WacomWebSocketService.WebScoketServer
          */
         public SuperSocketController(int port)
         {
-            if (LogManager.GetCurrentLoggers().Length > 0)
-                this.Log = LogManager.GetCurrentLoggers()[0];
-            else
+            //if (LogManager.GetCurrentLoggers().Length > 0)
+            //    this.Log = LogManager.GetCurrentLoggers()[0];
+            //else
                 this.Log = LogManager.GetLogger(Properties.Settings.Default.logName);
             if (port == 0)
                 port = 82;
@@ -47,9 +49,9 @@ namespace WacomWebSocketService.WebScoketServer
         {
 
             int port;
-            if (LogManager.GetCurrentLoggers().Length > 0)
-                this.Log = LogManager.GetCurrentLoggers()[0];
-            else
+            //if (LogManager.GetCurrentLoggers().Length > 0)
+            //    this.Log = LogManager.GetCurrentLoggers()[0];
+            //else
                 this.Log = LogManager.GetLogger(Properties.Settings.Default.logName);
             port = 82;
             this.appServer = new WebSocketServer();
@@ -141,6 +143,15 @@ namespace WacomWebSocketService.WebScoketServer
         {
             return new Response { Type = ResponseType.Error, Data = new { s } };
         }
+        /**
+         * @Method Create a new WebSocket Response of type Error
+         * @Params Response json message
+         * @Return WebSocket Response Entity
+         */
+        public Response createErrorResponse(String s, String s2)
+        {
+            return new Response { Type = ResponseType.Error, Data = new { s }, Data2 = s2 };
+        }
 
 
         /**
@@ -169,6 +180,15 @@ namespace WacomWebSocketService.WebScoketServer
         public Response createOperationListResponse(String jsonObject)
         {
             return new Response { Type = ResponseType.OperationList, Data=jsonObject };
+        }
+        /**
+         * @Method Create a new WebSocket Response of type
+         * 
+         * @Return WebSocket Response Entity
+         */
+        public Response createOperationListResponse(String jsonObject, String operation)
+        {
+            return new Response { Type = ResponseType.OperationList, Data = jsonObject, Data2=operation };
         }
         /**
          * @Method Create a new WebSocket Response of type File

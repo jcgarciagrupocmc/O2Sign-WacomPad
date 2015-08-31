@@ -24,9 +24,9 @@ namespace WacomWebSocketService.WSClient
         {
             this.client = new RestClient(host);
             this.client.Encoding = Encoding.UTF8;
-            if (LogManager.GetCurrentLoggers().Length > 0)
-                this.Log = LogManager.GetCurrentLoggers()[0];
-            else
+            //if (LogManager.GetCurrentLoggers().Length > 0)
+            //    this.Log = LogManager.GetCurrentLoggers()[0];
+            //else
                 this.Log = LogManager.GetLogger(Properties.Settings.Default.logName);
         }
 
@@ -38,9 +38,9 @@ namespace WacomWebSocketService.WSClient
         {
             this.client = new RestClient(host);
             this.client.Encoding = encoding;
-            if (LogManager.GetCurrentLoggers().Length > 0)
-                this.Log = LogManager.GetCurrentLoggers()[0];
-            else
+            //if (LogManager.GetCurrentLoggers().Length > 0)
+            //    this.Log = LogManager.GetCurrentLoggers()[0];
+            //else
                 this.Log = LogManager.GetLogger(Properties.Settings.Default.logName);
         }
 

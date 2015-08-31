@@ -7,6 +7,7 @@ using System.Linq;
 using System.ServiceProcess;
 using System.Text;
 using System.Threading.Tasks;
+using WacomWebSocketService.Control;
 
 namespace WacomWebSocketService
 {
@@ -19,6 +20,9 @@ namespace WacomWebSocketService
 
         protected override void OnStart(string[] args)
         {
+            Logic logic = Logic.getInstance();
+            logic.onStart();
+            //System.Threading.Thread.Sleep(System.Threading.Timeout.Infinite);
         }
 
         protected override void OnStop()

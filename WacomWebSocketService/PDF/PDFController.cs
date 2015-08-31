@@ -25,9 +25,9 @@ namespace WacomWebSocketService.PDF
          */
         public PDFController()
         {
-            if (LogManager.GetCurrentLoggers().Length > 0)
-                this.Log = LogManager.GetCurrentLoggers()[0];
-            else
+            //if (LogManager.GetCurrentLoggers().Length > 0)
+            //    this.Log = LogManager.GetCurrentLoggers()[0];
+            //else
                 this.Log = LogManager.GetLogger(Properties.Settings.Default.logName);
         }
         /**
@@ -38,7 +38,7 @@ namespace WacomWebSocketService.PDF
         private bool open(DocumentData pdfDoc)
         {
             String path;
-            pdfDoc.Docsignedpath = Properties.Settings.Default.tempPath + pdfDoc.Idoperation + "\\signed\\" + pdfDoc.Docname;
+            pdfDoc.Docsignedpath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + pdfDoc.Idoperation + "\\signed\\" + pdfDoc.Docname;
             if (pdfDoc.documentHasBeenSigned())
             {
                 path = pdfDoc.Docpath + "-signed.pdf";
@@ -136,7 +136,7 @@ namespace WacomWebSocketService.PDF
             try
             {
                 sign.Image.MakeTransparent(System.Drawing.Color.White);
-                sign.Image.Save(Properties.Settings.Default.tempPath + "test.png", System.Drawing.Imaging.ImageFormat.Png);                
+                sign.Image.Save(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "test.png", System.Drawing.Imaging.ImageFormat.Png);                
                 Image i = Image.GetInstance((System.Drawing.Image)sign.Image, new BaseColor(System.Drawing.Color.Transparent));
                 //i.BackgroundColor = BaseColor.
                 float percentage = float.Parse(Properties.Settings.Default.imageRatio)/100;

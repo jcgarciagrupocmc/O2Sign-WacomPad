@@ -5,6 +5,7 @@ using WacomWebSocketService.Entities;
 using WacomWebSocketService.Consts;
 using System.IO;
 using log4net;
+using log4net.Config;
 using WacomWebSocketService.Exceptions;
 
 namespace WacomWebSocketService.Control
@@ -72,14 +73,18 @@ namespace WacomWebSocketService.Control
          */
         private Logic()
         {
+            log4net.Config.XmlConfigurator.Configure();
             this.padController = new WacomPad.WacomPadController();
             this.pdfController = new PDF.PDFController();
             this.restController = new WSClient.RestController(Properties.Settings.Default.host);
             this.wsController = new WebScoketServer.SuperSocketController();
-            if (LogManager.GetCurrentLoggers().Length > 0)
-                this.Log = LogManager.GetCurrentLoggers()[0];
-            else
+            //if (LogManager.GetCurrentLoggers().Length > 0)
+            //    this.Log = LogManager.GetCurrentLoggers()[0];
+            //else
+            //{
+                BasicConfigurator.Configure();
                 this.Log = LogManager.GetLogger(Properties.Settings.Default.logName);
+            //}
             Log.Error("Test");
 
         }
@@ -88,14 +93,16 @@ namespace WacomWebSocketService.Control
          */
         public void onStart()
         {
-            if (padController.checkPadConnected())
-            {
+
+#if true
+            //if (padController.checkPadConnected())
+            //{
                 this.wsController.open();
-                while (true)
-                {
-                    continue;
-                }
-            }
+                System.Threading.Thread.Sleep(System.Threading.Timeout.Infinite);
+            //} 
+#else
+            this.wsController.open();
+#endif
         }
         /**
          * @Method parses the newoperation json recieved from REST WS and gets all the operation documents saving them temporally on disk
@@ -106,11 +113,11 @@ namespace WacomWebSocketService.Control
             //Creating disk directory structure for the operation
             List<DocumentData> list = Parser.parseDocumentData(jsonOperation);
             //List<DocumentData> list = JsonConvert.DeserializeObject<List<DocumentData>>(jsonOperation);
-            if ((list!=null) && (list.Count > 0)) { 
-                if (Directory.Exists(Properties.Settings.Default.tempPath + list.ElementAt(0).Idoperation))
-                    Directory.Delete(Properties.Settings.Default.tempPath + list.ElementAt(0).Idoperation, true);
-                Directory.CreateDirectory(Properties.Settings.Default.tempPath + list.ElementAt(0).Idoperation);
-                Directory.CreateDirectory(Properties.Settings.Default.tempPath + list.ElementAt(0).Idoperation + "\\signed");
+            if ((list!=null) && (list.Count > 0)) {
+                if (Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + list.ElementAt(0).Idoperation))
+                    Directory.Delete(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + list.ElementAt(0).Idoperation, true);
+                Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + list.ElementAt(0).Idoperation);
+                Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + list.ElementAt(0).Idoperation + "\\signed");
 
                 //retrieving all the operation documents from REST WS
                 foreach (DocumentData doc in list)
@@ -119,8 +126,8 @@ namespace WacomWebSocketService.Control
                     Byte[] pdfBytes = this.restController.doGet(url);
                     if (pdfBytes != null)
                     {
-                        doc.Docpath = Properties.Settings.Default.tempPath + list.ElementAt(0).Idoperation + "\\" + doc.Docname;
-                        doc.Docsignedpath = Properties.Settings.Default.tempPath + list.ElementAt(0).Idoperation + "\\signed\\" + doc.Docname;
+                        doc.Docpath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + list.ElementAt(0).Idoperation + "\\" + doc.Docname;
+                        doc.Docsignedpath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + list.ElementAt(0).Idoperation + "\\signed\\" + doc.Docname;
                         FileStream fis = File.Create(doc.Docpath, pdfBytes.Length);
                         fis.Write(pdfBytes, 0, pdfBytes.Length);
                         fis.Flush();
@@ -193,8 +200,10 @@ namespace WacomWebSocketService.Control
                     String[] signArray = this.getSignString(sign);
                     doc.Docmetadata[signer].Signed = this.pdfController.doSignature(doc, sign, signArray, doc.Docmetadata[signer]);
                 }
-                
+
             }
+            else
+                throw new Exception("pad not connected");
                 
             return doc.Docmetadata[signer].Signed;
 
@@ -298,7 +307,8 @@ namespace WacomWebSocketService.Control
                             if (jsonData != String.Empty)
                             {
                                 this.operation = this.newOperation(jsonData);
-                                return Parser.serializeObject(this.wsController.createOperationListResponse(jsonData));
+                                String s = Parser.serializeObject(operation);
+                                return Parser.serializeObject(this.wsController.createOperationListResponse(jsonData,s));
                             }
                             else
                                 return Parser.serializeObject(this.wsController.createErrorResponse());
@@ -372,6 +382,9 @@ namespace WacomWebSocketService.Control
             {
                 Log.Error(e.Message);
                 Log.Error(e.StackTrace);
+                if(e.InnerException!=null)
+                    throw new IncorrectMessageException(e, Parser.serializeObject(this.wsController.createErrorResponse(e.Message,e.InnerException.Message)));
+                else
                 throw new IncorrectMessageException(e, Parser.serializeObject(this.wsController.createErrorResponse(e.Message)));
             }
             throw new NotImplementedException();

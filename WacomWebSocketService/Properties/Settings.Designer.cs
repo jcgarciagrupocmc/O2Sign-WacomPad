@@ -34,15 +34,6 @@ namespace WacomWebSocketService.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute(".\\\\temp\\\\")]
-        public string tempPath {
-            get {
-                return ((string)(this["tempPath"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("http://212.166.79.227/ts.inx")]
         public string tsaUrl {
             get {
@@ -88,7 +79,7 @@ namespace WacomWebSocketService.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("WacomPadServiceLog")]
+        [global::System.Configuration.DefaultSettingValueAttribute("O2SignServiceLog")]
         public string logName {
             get {
                 return ((string)(this["logName"]));
@@ -110,6 +101,15 @@ namespace WacomWebSocketService.Properties {
         public string stringSeparator {
             get {
                 return ((string)(this["stringSeparator"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Firmante {0} con DNI {1}")]
+        public string presingModel {
+            get {
+                return ((string)(this["presingModel"]));
             }
         }
     }
