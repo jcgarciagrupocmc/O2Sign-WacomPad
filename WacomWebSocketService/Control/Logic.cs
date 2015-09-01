@@ -78,15 +78,7 @@ namespace WacomWebSocketService.Control
             this.pdfController = new PDF.PDFController();
             this.restController = new WSClient.RestController(Properties.Settings.Default.host);
             this.wsController = new WebScoketServer.SuperSocketController();
-            //if (LogManager.GetCurrentLoggers().Length > 0)
-            //    this.Log = LogManager.GetCurrentLoggers()[0];
-            //else
-            //{
-                BasicConfigurator.Configure();
-                this.Log = LogManager.GetLogger(Properties.Settings.Default.logName);
-            //}
-            Log.Error("Test");
-
+            this.Log = LogManager.GetLogger(Properties.Settings.Default.logName);
         }
         /**
          * @Method checks if WacomPad is conected and if so start the WebSocket and waits in active waiting loop
@@ -94,14 +86,18 @@ namespace WacomWebSocketService.Control
         public void onStart()
         {
 
-#if true
-            //if (padController.checkPadConnected())
-            //{
+#if DEBUG
+            if (padController.checkPadConnected())
+            {
                 this.wsController.open();
                 System.Threading.Thread.Sleep(System.Threading.Timeout.Infinite);
-            //} 
+            } 
 #else
+            
             this.wsController.open();
+            Log.Debug("System goes to sleep");
+            System.Threading.Thread.Sleep(System.Threading.Timeout.Infinite);
+            //this.wsController.open();
 #endif
         }
         /**
@@ -114,10 +110,10 @@ namespace WacomWebSocketService.Control
             List<DocumentData> list = Parser.parseDocumentData(jsonOperation);
             //List<DocumentData> list = JsonConvert.DeserializeObject<List<DocumentData>>(jsonOperation);
             if ((list!=null) && (list.Count > 0)) {
-                if (Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + list.ElementAt(0).Idoperation))
-                    Directory.Delete(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + list.ElementAt(0).Idoperation, true);
-                Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + list.ElementAt(0).Idoperation);
-                Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + list.ElementAt(0).Idoperation + "\\signed");
+                if (Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)+ "\\" + list.ElementAt(0).Idoperation))
+                    Directory.Delete(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\" + list.ElementAt(0).Idoperation, true);
+                Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\" + list.ElementAt(0).Idoperation);
+                Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\" + list.ElementAt(0).Idoperation + "\\signed");
 
                 //retrieving all the operation documents from REST WS
                 foreach (DocumentData doc in list)
@@ -126,8 +122,8 @@ namespace WacomWebSocketService.Control
                     Byte[] pdfBytes = this.restController.doGet(url);
                     if (pdfBytes != null)
                     {
-                        doc.Docpath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + list.ElementAt(0).Idoperation + "\\" + doc.Docname;
-                        doc.Docsignedpath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + list.ElementAt(0).Idoperation + "\\signed\\" + doc.Docname;
+                        doc.Docpath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\" + list.ElementAt(0).Idoperation + "\\" + doc.Docname;
+                        doc.Docsignedpath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\" + list.ElementAt(0).Idoperation + "\\signed\\" + doc.Docname;
                         FileStream fis = File.Create(doc.Docpath, pdfBytes.Length);
                         fis.Write(pdfBytes, 0, pdfBytes.Length);
                         fis.Flush();
@@ -193,10 +189,14 @@ namespace WacomWebSocketService.Control
             doc.Docmetadata[signer].Signed = false;
             if (this.padController.checkPadConnected())
             {
+                this.Log.Debug(String.Format("The document {0} from operation {1} is going to be signed by {2}", doc.Docname, doc.Idoperation, doc.Docmetadata[signer]));
+                this.Log.Debug("Calling Wacom Pad Controller");
                 GraphSign sign = this.padController.padSigning(doc.Docmetadata[signer]);
                 if (sign != null)
                 {
+                    this.Log.Debug("Graph Sign retrieved correctly");
                     String jsonSign = Parser.serializeObject(sign.Points);
+                    //this.Log.Debug("JSON string for sign "+jsonSign);
                     String[] signArray = this.getSignString(sign);
                     doc.Docmetadata[signer].Signed = this.pdfController.doSignature(doc, sign, signArray, doc.Docmetadata[signer]);
                 }
@@ -251,6 +251,7 @@ namespace WacomWebSocketService.Control
             List<DatosCaptura> result = new List<DatosCaptura>();
             if (!this.fullSigned(list))
             {
+                Log.Debug("Operation not fulled signed");
                 return false;
             }
             foreach (DocumentData doc in list)
@@ -259,7 +260,23 @@ namespace WacomWebSocketService.Control
             }
             
                 restController.doPost(WSMethods.UPLOAD_ALL_SIGNED_PDF, result);
+                this.deleteTempFiles(list);
             return true;
+        }
+        /**
+         * @Method deletes the temp files stored in localmachine
+         */
+        private void deleteTempFiles(List<DocumentData> list)
+        {
+            Log.Debug("Deleting temp files");
+            if (Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\" + list.ElementAt(0).Idoperation))
+                Directory.Delete(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\" + list.ElementAt(0).Idoperation, true);
+            else
+                Log.Debug("Nothing to delete");
+            if (Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\" + list.ElementAt(0).Idoperation))
+                Log.Debug("Files deleted");
+            else
+                Log.Error("Files not deleted");
         }
         /**
          * 
@@ -281,6 +298,7 @@ namespace WacomWebSocketService.Control
          */
         internal string recieveWebSMessage(string message)
         {
+            Log.Debug("Message Recieved from WebSocket: " + message);
             try
             {
                 String url, jsonData;
@@ -289,13 +307,14 @@ namespace WacomWebSocketService.Control
                 switch ((int)obj.Type)
                 {
                     //Processing connection, handshake and register message from websocket
-                    case (int)CommandType.Register:
+                    case (int)CommandType.Register:                        
                         if (padController.checkPadConnected())
                         {
                             return Parser.serializeObject(this.wsController.createRegisterResponse());
                         }
                         else
                         {
+                            Log.Info("Wacom Pad not Connected");
                             return Parser.serializeObject(this.wsController.createErrorResponse());
                         }
                      //Processing getOperation message from websocket
@@ -306,12 +325,17 @@ namespace WacomWebSocketService.Control
                             jsonData = this.restController.doGet(url, null);
                             if (jsonData != String.Empty)
                             {
+                                Log.Debug("JSON Recieved from PIE: " + jsonData);
                                 this.operation = this.newOperation(jsonData);
                                 String s = Parser.serializeObject(operation);
                                 return Parser.serializeObject(this.wsController.createOperationListResponse(jsonData,s));
                             }
                             else
+                            {
+                                Log.Error("Error no data recieved from PIE");
                                 return Parser.serializeObject(this.wsController.createErrorResponse());
+                            }
+                                
                         }
                         else
                             return Parser.serializeObject(this.wsController.createErrorResponse());

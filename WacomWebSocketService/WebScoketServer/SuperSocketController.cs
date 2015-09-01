@@ -37,6 +37,7 @@ namespace WacomWebSocketService.WebScoketServer
             }
             else
             {
+                Log.Debug("WebSocket Started at port " + port);
                 appServer.NewMessageReceived += new SessionHandler<WebSocketSession, string>(this.appServer_NewMessageReceived);
             }
 
@@ -49,10 +50,7 @@ namespace WacomWebSocketService.WebScoketServer
         {
 
             int port;
-            //if (LogManager.GetCurrentLoggers().Length > 0)
-            //    this.Log = LogManager.GetCurrentLoggers()[0];
-            //else
-                this.Log = LogManager.GetLogger(Properties.Settings.Default.logName);
+            this.Log = LogManager.GetLogger(Properties.Settings.Default.logName);
             port = 82;
             this.appServer = new WebSocketServer();
             if (!this.appServer.Setup(port))
@@ -62,6 +60,7 @@ namespace WacomWebSocketService.WebScoketServer
             }
             else
             {
+                Log.Debug("WebSocket Started at port "+port);
                 appServer.NewMessageReceived += new SessionHandler<WebSocketSession, string>(this.appServer_NewMessageReceived);
             }
         }

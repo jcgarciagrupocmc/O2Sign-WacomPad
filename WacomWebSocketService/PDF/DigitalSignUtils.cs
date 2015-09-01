@@ -169,10 +169,8 @@ namespace WacomWebSocketService.PDF
         public static Org.BouncyCastle.X509.X509Certificate[] crearCertificado()
         {
             ILog Log;
-            //if (LogManager.GetCurrentLoggers().Length > 0)
-            //    Log = LogManager.GetCurrentLoggers()[0];
-            //else
-                Log = LogManager.GetLogger(Properties.Settings.Default.logName);
+            Log = LogManager.GetLogger(Properties.Settings.Default.logName);
+            Log.Debug("Reading certificate files");
             MemoryStream ms = readCertFiles();
             StreamReader sr = new StreamReader(ms);
             PemReader pem = new PemReader(sr);
@@ -261,14 +259,8 @@ namespace WacomWebSocketService.PDF
          */
         public static void signPDF(DocumentData doc, Dictionary<String,String> metadata)
         {
-            //BouncyCastleProvider provider = new BouncyCastleProvider();
-
-            //  AddProvider(provider);
             ILog Log;
-            //if (LogManager.GetCurrentLoggers().Length > 0)
-            //    Log = LogManager.GetCurrentLoggers()[0];
-            //else
-                Log = LogManager.GetLogger(Properties.Settings.Default.logName);
+            Log = LogManager.GetLogger(Properties.Settings.Default.logName);
             try
             {
                 PdfReader reader = new PdfReader(doc.Docsignedpath);
@@ -277,12 +269,16 @@ namespace WacomWebSocketService.PDF
                 FileStream fos = new FileStream(doc.Docsignedpath + "-signed.pdf", FileMode.CreateNew, FileAccess.Write);
 
                 doc.Docsignedpath = doc.Docsignedpath + "-signed.pdf";
-                PdfStamper stp = PdfStamper.CreateSignature(reader, fos, '\0', null, true);               
+                Log.Debug(String.Format("Creating Stamper for doc {0}",doc.Docname));
+                PdfStamper stp = PdfStamper.CreateSignature(reader, fos, '\0', null, true);
+                Log.Debug(String.Format("Creating Certificate for doc {0}", doc.Docname));
                 Org.BouncyCastle.X509.X509Certificate[] chain = crearCertificado();
+                Log.Debug(String.Format("Reading private key for doc {0}", doc.Docname));
                 AsymmetricKeyParameter pk = readPrivateKey();
                 stp.Writer.CloseStream = false;
                 LtvVerification v = stp.LtvVerification;
                 AcroFields af = stp.AcroFields;
+                Log.Debug(String.Format("Adding metadata for doc {0}", doc.Docname));
                 stp.MoreInfo = metadata;
                 foreach (String sigName in af.GetSignatureNames()) 
                 {                   
@@ -296,14 +292,18 @@ namespace WacomWebSocketService.PDF
                 Dictionary<PdfName, int> exc = new Dictionary<PdfName, int>();
                 exc.Add(PdfName.CONTENTS, (contentEstimated * 2 + 2));
                 //Add timestamp
+
+                Log.Debug(String.Format("Adding timestamp for doc {0}", doc.Docname));
                 TSAClientBouncyCastle tsc  = new TSAClientBouncyCastle(Properties.Settings.Default.tsaUrl, Properties.Settings.Default.tsaUser, Properties.Settings.Default.tsaPass, contentEstimated, DigestAlgorithms.SHA512);
                 // Creating the signature
                 //LtvTimestamp.Timestamp(sap, tsc, null);
                 //Org.BouncyCastle.Crypto.BouncyCastleDigest messageDigest = MessageDigest.getInstance("SHA1");
                 //IExternalDigest digest = new Org.BouncyCastle.Crypto.BouncyCastleDigest();
                 //RSACryptoServiceProvider crypt = (RSACryptoServiceProvider)cert.PrivateKey;
+                Log.Debug(String.Format("Dreating signature for doc {0}", doc.Docname));
                 IExternalSignature signature = new PrivateKeySignature(pk, DigestAlgorithms.SHA512);
                 MakeSignature.SignDetached(sap, signature, chain, null, null, tsc, 0, CryptoStandard.CMS);
+                Log.Debug(String.Format("Closing file for doc {0}", doc.Docname));
                 stp.Close();
                 fos.Close();                
                 reader.Close();

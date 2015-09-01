@@ -38,7 +38,7 @@ namespace WacomWebSocketService.PDF
         private bool open(DocumentData pdfDoc)
         {
             String path;
-            pdfDoc.Docsignedpath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + pdfDoc.Idoperation + "\\signed\\" + pdfDoc.Docname;
+            pdfDoc.Docsignedpath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)+ "\\"+ pdfDoc.Idoperation + "\\signed\\" + pdfDoc.Docname;
             if (pdfDoc.documentHasBeenSigned())
             {
                 path = pdfDoc.Docpath + "-signed.pdf";
@@ -89,9 +89,11 @@ namespace WacomWebSocketService.PDF
                 String keywords = "";
                 hMap.TryGetValue("Keywords",out keywords);
                 keywords += metadata+Properties.Settings.Default.stringSeparator;
+                this.Log.Debug("Keywords content " + keywords);
                 hMap.Remove("Keywords");
                 hMap.Add("Keywords", keywords);
                 //Copy PDF
+                this.Log.Debug("Starting PDF copy");
                 for (int i = 1; i <= reader.NumberOfPages; i++)
                 {
                     doc.SetPageSize(reader.GetPageSize(i));
@@ -106,13 +108,19 @@ namespace WacomWebSocketService.PDF
                         cb.AddTemplate(importedPage, 1.0F, 0, 0, 1.0F, 0, 0);
                     //Insert Graph image on coordenates
                     if (i == signer.Page)
+                    {
+                        this.Log.Debug(String.Format("Trying to insert graph sign in Page {0}, x={1}, y={2}", signer.Page, signer.X, signer.Y));
                         insertedSign = this.insertGraphSign(sign, cb, signer.X, signer.Y);
+                    }
+                        
                 }
                 if (insertedSign)
                 {
+                    this.Log.Debug("Graph Sign inserted correctly, starting PAdES process");
                     //Do PAdES
                     this.close();
                     DigitalSignUtils.signPDF(source, hMap);
+                    this.Log.Debug("Moving files");
                     if(File.Exists(source.Docpath+"-signed.pdf"))
                         File.Delete(source.Docpath+"-signed.pdf");
                     File.Copy(source.Docsignedpath, source.Docpath + "-signed.pdf");
@@ -135,8 +143,8 @@ namespace WacomWebSocketService.PDF
         {
             try
             {
-                sign.Image.MakeTransparent(System.Drawing.Color.White);
-                sign.Image.Save(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "test.png", System.Drawing.Imaging.ImageFormat.Png);                
+                //sign.Image.MakeTransparent(System.Drawing.Color.White);
+                //sign.Image.Save(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "test.png", System.Drawing.Imaging.ImageFormat.Png);                
                 Image i = Image.GetInstance((System.Drawing.Image)sign.Image, new BaseColor(System.Drawing.Color.Transparent));
                 //i.BackgroundColor = BaseColor.
                 float percentage = float.Parse(Properties.Settings.Default.imageRatio)/100;
@@ -166,8 +174,9 @@ namespace WacomWebSocketService.PDF
             String encrypted ="";
             foreach (String s in signArray)
                 encrypted += s;
+            //this.Log.Debug("Sign String to encrypt " + encrypted);
             encrypted = DigitalSignUtils.encrypt(encrypted);
-            
+            //this.Log.Debug("Sign String encrypted " + encrypted);
             return this.doSignature(doc, sign, encrypted,signer);
         }
         /**

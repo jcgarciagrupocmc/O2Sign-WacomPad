@@ -32,5 +32,8 @@
     <Setting Name="presingModel" Type="System.String" Scope="Application">
       <Value Profile="(Default)">Firmante {0} con DNI {1}</Value>
     </Setting>
+    <Setting Name="logLevel" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">ALL</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

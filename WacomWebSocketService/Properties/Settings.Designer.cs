@@ -112,5 +112,14 @@ namespace WacomWebSocketService.Properties {
                 return ((string)(this["presingModel"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("ALL")]
+        public string logLevel {
+            get {
+                return ((string)(this["logLevel"]));
+            }
+        }
     }
 }

@@ -18,10 +18,7 @@ namespace WacomWebSocketService.WacomPad
         {
 
             ILog Log;
-            //if (LogManager.GetCurrentLoggers().Length > 0)
-            //    Log = LogManager.GetCurrentLoggers()[0];
-            //else
-                Log = LogManager.GetLogger(Properties.Settings.Default.logName);
+            Log = LogManager.GetLogger(Properties.Settings.Default.logName);
             try
             {
 
@@ -41,7 +38,6 @@ namespace WacomWebSocketService.WacomPad
             catch (Exception ex)
             {
                 Log.Error(ex.Message, ex);
-                throw ex;
                 return null;
             }
         }
@@ -52,10 +48,7 @@ namespace WacomWebSocketService.WacomPad
         public bool checkPadConnected()
         {
             ILog Log;
-            //if (LogManager.GetCurrentLoggers().Length > 0)
-            //    Log = LogManager.GetCurrentLoggers()[0];
-            //else
-                Log = LogManager.GetLogger(Properties.Settings.Default.logName);
+            Log = LogManager.GetLogger(Properties.Settings.Default.logName);
 
             try
             {
@@ -65,7 +58,6 @@ namespace WacomWebSocketService.WacomPad
             catch (Exception ex)
             {
                 Log.Error(ex);
-                throw new Exception("error COM", ex);
                 return false;
             }
         }
