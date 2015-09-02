@@ -148,6 +148,12 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_C4D4F4FA0FEACBA5D9A949F1666FA1E2"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_030A8EB96A704B528E596317AABE9163"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -203,12 +209,6 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_F72CDF41179CDDE6F6AC49852EBEB491"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_C4D4F4FA0FEACBA5D9A949F1666FA1E2"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -773,15 +773,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:O2Sign"
-        "ProductCode" = "8:{70124197-6E55-41A9-8988-22B6716B9F78}"
-        "PackageCode" = "8:{C38073C3-C243-46B6-A19C-DE857633F6BF}"
+        "ProductCode" = "8:{60418C05-E6D0-464D-BB78-7773DC276E7C}"
+        "PackageCode" = "8:{254EEA10-54D6-45F6-AA43-6AE6087A2AD0}"
         "UpgradeCode" = "8:{F1D16494-D2E0-4B18-B5C7-E6FDC39CBCD1}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:0.0.1"
+        "ProductVersion" = "8:0.0.2"
         "Manufacturer" = "8:Grupo CMC"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"

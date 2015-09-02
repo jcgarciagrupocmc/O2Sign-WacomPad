@@ -89,7 +89,7 @@ namespace WacomWebSocketService.PDF
                 String keywords = "";
                 hMap.TryGetValue("Keywords",out keywords);
                 keywords += metadata+Properties.Settings.Default.stringSeparator;
-                this.Log.Debug("Keywords content " + keywords);
+                this.Log.Debug("Keywords length " + keywords.Length);
                 hMap.Remove("Keywords");
                 hMap.Add("Keywords", keywords);
                 //Copy PDF

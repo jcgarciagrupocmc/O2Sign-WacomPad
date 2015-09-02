@@ -80,11 +80,13 @@ namespace WacomWebSocketService.WebScoketServer
                 }
                 else
                 {
+                    Log.Debug("socket opened");
                     return true;
                 }
             }
             else 
-            { 
+            {
+                Log.Debug("Already exists a server");
                 return false;
             }
 
@@ -117,6 +119,7 @@ namespace WacomWebSocketService.WebScoketServer
         {
             try
             {
+                Log.Debug("Message Recieved " + message);
                 session.Send(Control.Logic.getInstance().recieveWebSMessage(message));
             }
             catch (IncorrectMessageException ex)

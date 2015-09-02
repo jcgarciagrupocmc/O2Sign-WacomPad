@@ -129,6 +129,10 @@ namespace WacomWebSocketService.Control
                         fis.Flush();
                         fis.Close();
                     }
+                    else
+                    {
+                        Log.Error("No pdf bytes");
+                    }
                     
                 }
             }
@@ -145,12 +149,13 @@ namespace WacomWebSocketService.Control
             DocumentData doc = this.getDocuemnt(uuid);
             if (doc != null)
             {
-                
                 List<Signer> signers = this.getRemainingSigners(doc);
+                String s = Parser.serializeObject(signers);
+                Log.Debug(s);
                 if (doc.documentHasBeenSigned())
-                    return Parser.serializeObject(this.wsController.createFileResponse(ControlTools.fileToBase64(doc.Docsignedpath), Parser.serializeObject(signers)));
+                    return Parser.serializeObject(this.wsController.createFileResponse(ControlTools.fileToBase64(doc.Docsignedpath), s));
                 else
-                    return Parser.serializeObject(this.wsController.createFileResponse(ControlTools.fileToBase64(doc.Docpath), Parser.serializeObject(signers)));
+                    return Parser.serializeObject(this.wsController.createFileResponse(ControlTools.fileToBase64(doc.Docpath), s));
             }
             else
             {
@@ -171,7 +176,9 @@ namespace WacomWebSocketService.Control
             {
                 //List<Signer> signers = this.getRemainingSigners(doc);
                 List<Signer> signers = doc.Docmetadata;
-                return Parser.serializeObject(this.wsController.createFileResponse(ControlTools.fileToBase64(doc.Docsignedpath),Parser.serializeObject(signers)));
+                String s = Parser.serializeObject(signers);
+                Log.Debug(s);
+                return Parser.serializeObject(this.wsController.createFileResponse(ControlTools.fileToBase64(doc.Docsignedpath),s));
             }
             else
             {
@@ -189,7 +196,7 @@ namespace WacomWebSocketService.Control
             doc.Docmetadata[signer].Signed = false;
             if (this.padController.checkPadConnected())
             {
-                this.Log.Debug(String.Format("The document {0} from operation {1} is going to be signed by {2}", doc.Docname, doc.Idoperation, doc.Docmetadata[signer]));
+                this.Log.Debug(String.Format("The document {0} from operation {1} is going to be signed by {2}", doc.Docname, doc.Idoperation, doc.Docmetadata[signer].Nombre));
                 this.Log.Debug("Calling Wacom Pad Controller");
                 GraphSign sign = this.padController.padSigning(doc.Docmetadata[signer]);
                 if (sign != null)
@@ -298,6 +305,7 @@ namespace WacomWebSocketService.Control
          */
         internal string recieveWebSMessage(string message)
         {
+            String result;
             Log.Debug("Message Recieved from WebSocket: " + message);
             try
             {
@@ -310,12 +318,16 @@ namespace WacomWebSocketService.Control
                     case (int)CommandType.Register:                        
                         if (padController.checkPadConnected())
                         {
-                            return Parser.serializeObject(this.wsController.createRegisterResponse());
+                            result = Parser.serializeObject(this.wsController.createRegisterResponse());
+                            Log.Debug(result);
+                            return result;
                         }
                         else
                         {
                             Log.Info("Wacom Pad not Connected");
-                            return Parser.serializeObject(this.wsController.createErrorResponse());
+                            result = Parser.serializeObject(this.wsController.createErrorResponse());
+                            Log.Debug(result);
+                            return result;
                         }
                      //Processing getOperation message from websocket
                     case (int)CommandType.GetOperation:
@@ -328,12 +340,16 @@ namespace WacomWebSocketService.Control
                                 Log.Debug("JSON Recieved from PIE: " + jsonData);
                                 this.operation = this.newOperation(jsonData);
                                 String s = Parser.serializeObject(operation);
-                                return Parser.serializeObject(this.wsController.createOperationListResponse(jsonData,s));
+                                result = Parser.serializeObject(this.wsController.createOperationListResponse(jsonData, s));
+                                Log.Debug(result);
+                                return result;
                             }
                             else
                             {
                                 Log.Error("Error no data recieved from PIE");
-                                return Parser.serializeObject(this.wsController.createErrorResponse());
+                                result = Parser.serializeObject(this.wsController.createErrorResponse());
+                                Log.Debug(result);
+                                return result;
                             }
                                 
                         }
@@ -343,45 +359,65 @@ namespace WacomWebSocketService.Control
                     case (int)CommandType.GetFile:
                         if (obj.idFile != null)
                         {
-                                return this.getPdfUnsigned((String)obj.idFile);                                                                                                              
+                            result = this.getPdfUnsigned((String)obj.idFile);
+                            Log.Debug("Message PDF Unsigned with length" + result.Length);
+                            return result;                                                                                                           
                         }
                         else
                         {
                             Log.Error("Incorrect Parameter");
-                            return Parser.serializeObject(this.wsController.createErrorResponse());
+                            result = Parser.serializeObject(this.wsController.createErrorResponse());
+                            Log.Debug(result);
+                            return result;
                         }
 
                     //Processing getSignedFile message from websocket
                     case (int)CommandType.GetSignedFile:
                         if (obj.idFile != null)
                         {
-                            return this.getPdfSigned((String)obj.idFile);
+                            result = this.getPdfSigned((String)obj.idFile);
+                            Log.Debug("Message PDF Signed with length "+result.Length);
+                            return result;
 
                         }
                         else
                         {
                             Log.Error("Incorrect Parameter");
-                            return Parser.serializeObject(this.wsController.createErrorResponse());
+                            result = Parser.serializeObject(this.wsController.createErrorResponse());
+                            Log.Debug(result);
+                            return result;
                         }
                     //Processing SignFile message from websocket
                     case (int)CommandType.SignFile:
                         if ((obj.idFile != null)&&(obj.idSigner!=null))
                         {
-                            return this.signPdf((String)obj.idFile, (int)obj.idSigner);
+                            result = this.signPdf((String)obj.idFile, (int)obj.idSigner);
+                            Log.Debug(result);
+                            return result;
 
                         }
                         else
                         {
                             Log.Error("Incorrect Parameter");
-                            return Parser.serializeObject(this.wsController.createErrorResponse());
+                            result = Parser.serializeObject(this.wsController.createErrorResponse());
+                            Log.Debug(result);
+                            return result;
                         }
                     case (int)CommandType.UploadOperation:
                         if (obj.idFile != null)
                         {
                             if (this.uploadSignedOperation(this.operation))
-                                return Parser.serializeObject(this.wsController.createOperationOKResponse());
+                            {
+                                result = Parser.serializeObject(this.wsController.createOperationOKResponse());
+                                Log.Debug(result);
+                                return result;
+                            }
                             else
-                                return Parser.serializeObject(this.wsController.createRemainingSignersResponse());
+                            {
+                                result = Parser.serializeObject(this.wsController.createRemainingSignersResponse());
+                                Log.Debug(result);
+                                return result;
+                            }
 
                         }
                         else

@@ -1,3 +1,8 @@
+C:\Projects\CaserFirma\WacomWebSocketService\WacomWebSocketService\obj\Release\WacomWebSocketService.DocumentRecieverService.resources
+C:\Projects\CaserFirma\WacomWebSocketService\WacomWebSocketService\obj\Release\WacomWebSocketService.Properties.Resources.resources
+C:\Projects\CaserFirma\WacomWebSocketService\WacomWebSocketService\obj\Release\WacomWebSocketService.UI.PdfListUI.resources
+C:\Projects\CaserFirma\WacomWebSocketService\WacomWebSocketService\obj\Release\WacomWebSocketService.WacomPad.WacomPadForm.resources
+C:\Projects\CaserFirma\WacomWebSocketService\WacomWebSocketService\obj\Release\WacomWebSocketService.csproj.GenerateResource.Cache
 C:\Projects\CaserFirma\WacomWebSocketService\WacomWebSocketService\bin\Release\log4net.config
 C:\Projects\CaserFirma\WacomWebSocketService\WacomWebSocketService\bin\Release\O2SignService.exe.config
 C:\Projects\CaserFirma\WacomWebSocketService\WacomWebSocketService\bin\Release\O2SignService.exe
@@ -17,10 +22,5 @@ C:\Projects\CaserFirma\WacomWebSocketService\WacomWebSocketService\bin\Release\i
 C:\Projects\CaserFirma\WacomWebSocketService\WacomWebSocketService\bin\Release\log4net.xml
 C:\Projects\CaserFirma\WacomWebSocketService\WacomWebSocketService\bin\Release\Newtonsoft.Json.xml
 C:\Projects\CaserFirma\WacomWebSocketService\WacomWebSocketService\bin\Release\RestSharp.xml
-C:\Projects\CaserFirma\WacomWebSocketService\WacomWebSocketService\obj\Release\WacomWebSocketService.DocumentRecieverService.resources
-C:\Projects\CaserFirma\WacomWebSocketService\WacomWebSocketService\obj\Release\WacomWebSocketService.Properties.Resources.resources
-C:\Projects\CaserFirma\WacomWebSocketService\WacomWebSocketService\obj\Release\WacomWebSocketService.UI.PdfListUI.resources
-C:\Projects\CaserFirma\WacomWebSocketService\WacomWebSocketService\obj\Release\WacomWebSocketService.WacomPad.WacomPadForm.resources
-C:\Projects\CaserFirma\WacomWebSocketService\WacomWebSocketService\obj\Release\WacomWebSocketService.csproj.GenerateResource.Cache
 C:\Projects\CaserFirma\WacomWebSocketService\WacomWebSocketService\obj\Release\O2SignService.exe
 C:\Projects\CaserFirma\WacomWebSocketService\WacomWebSocketService\obj\Release\O2SignService.pdb
