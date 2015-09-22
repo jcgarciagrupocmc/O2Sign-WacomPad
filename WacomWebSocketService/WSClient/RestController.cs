@@ -120,12 +120,14 @@ namespace WacomWebSocketService.WSClient
          */
         public String doGet(String url, List<Parameter> parameters)
         {
+            Log.Debug("WebService Connection to " + url  );
             RestRequest GETRequest = new RestRequest(url, Method.GET);
             GETRequest.Timeout = 5000;
             if(parameters!=null)
                 foreach (Parameter p in parameters)
                     GETRequest.AddParameter(p);
             RestResponse GETResponse = (RestResponse)client.Execute(GETRequest);
+            Log.Debug("WebService Response" + GETResponse.ResponseStatus);
             if(GETResponse.ResponseStatus== ResponseStatus.Completed)
                 switch (GETResponse.StatusCode)
                 {

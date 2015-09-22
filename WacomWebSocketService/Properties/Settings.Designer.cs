@@ -25,7 +25,7 @@ namespace WacomWebSocketService.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://146.148.117.127:8080/BioSign/rest/signservices")]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://172.26.0.70:8080/BioSign/rest/signservices")]
         public string host {
             get {
                 return ((string)(this["host"]));
@@ -119,6 +119,15 @@ namespace WacomWebSocketService.Properties {
         public string logLevel {
             get {
                 return ((string)(this["logLevel"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("200")]
+        public double imageSize {
+            get {
+                return ((double)(this["imageSize"]));
             }
         }
     }

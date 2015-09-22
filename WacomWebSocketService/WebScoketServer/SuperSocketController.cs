@@ -12,7 +12,7 @@ namespace WacomWebSocketService.WebScoketServer
     /**
      * @Class class to control the WebSocket
      */
-    public class SuperSocketController
+    public class SuperSocketController :GenericSSController
     {
         private WebSocketServer appServer;
         private ILog Log;
@@ -23,13 +23,11 @@ namespace WacomWebSocketService.WebScoketServer
          */
         public SuperSocketController(int port)
         {
-            //if (LogManager.GetCurrentLoggers().Length > 0)
-            //    this.Log = LogManager.GetCurrentLoggers()[0];
-            //else
-                this.Log = LogManager.GetLogger(Properties.Settings.Default.logName);
+            this.Log = LogManager.GetLogger(Properties.Settings.Default.logName);
             if (port == 0)
                 port = 82;
             this.appServer = new WebSocketServer();
+            //this.appServer.Certificate = 
             if (!this.appServer.Setup(port))
             {
                 Log.Error("Error while creating Socket on port " + port);
@@ -154,8 +152,6 @@ namespace WacomWebSocketService.WebScoketServer
         {
             return new Response { Type = ResponseType.Error, Data = new { s }, Data2 = s2 };
         }
-
-
         /**
          * @Method Create a new WebSocket Response of type Error
          * @Return WebSocket Response Entity
@@ -164,8 +160,6 @@ namespace WacomWebSocketService.WebScoketServer
         {
             return new Response { Type = ResponseType.Error };
         }
-
-
         /**
          * @Method Create a new WebSocket Response of type OperationOK for UploadOperation Command
          * @Return WebSocket Response Entity
@@ -217,8 +211,6 @@ namespace WacomWebSocketService.WebScoketServer
         {
             return new Response { Type = ResponseType.OperationCanceled};
         }
-
-
         /**
          * @Method Create a new WebSocket Response of type RemainingSigners for UploadOperation Command
          * @Return WebSocket Response Entity 

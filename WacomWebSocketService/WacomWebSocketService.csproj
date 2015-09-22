@@ -154,7 +154,9 @@
       <DependentUpon>WacomPadForm.cs</DependentUpon>
     </Compile>
     <Compile Include="WacomPad\WacomPadUtils.cs" />
+    <Compile Include="WebScoketServer\GenericSSController.cs" />
     <Compile Include="WebScoketServer\Response.cs" />
+    <Compile Include="WebScoketServer\SecureSuperSocketController.cs" />
     <Compile Include="WebScoketServer\SuperSocketController.cs" />
     <Compile Include="WSClient\RestController.cs" />
   </ItemGroup>

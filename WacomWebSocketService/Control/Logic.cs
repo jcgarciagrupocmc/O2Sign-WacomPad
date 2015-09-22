@@ -205,6 +205,7 @@ namespace WacomWebSocketService.Control
                     String jsonSign = Parser.serializeObject(sign.Points);
                     //this.Log.Debug("JSON string for sign "+jsonSign);
                     String[] signArray = this.getSignString(sign);
+                    PDF.DigitalSignUtils.index = signer;
                     doc.Docmetadata[signer].Signed = this.pdfController.doSignature(doc, sign, signArray, doc.Docmetadata[signer]);
                 }
 
@@ -445,7 +446,7 @@ namespace WacomWebSocketService.Control
                 if(e.InnerException!=null)
                     throw new IncorrectMessageException(e, Parser.serializeObject(this.wsController.createErrorResponse(e.Message,e.InnerException.Message)));
                 else
-                throw new IncorrectMessageException(e, Parser.serializeObject(this.wsController.createErrorResponse(e.Message)));
+                    throw new IncorrectMessageException(e, Parser.serializeObject(this.wsController.createErrorResponse(e.Message)));
             }
             throw new NotImplementedException();
         }

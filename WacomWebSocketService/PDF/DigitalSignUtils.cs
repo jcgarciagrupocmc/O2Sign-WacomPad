@@ -15,8 +15,9 @@ using System.Text;
 
 namespace WacomWebSocketService.PDF
 {
-    class DigitalSignUtils
+    public class DigitalSignUtils
     {
+        public static int index = 0;
         private static int  bufferSize = 128;
         static String certificadoPem = "-----BEGIN CERTIFICATE-----\n" +
         "MIIHpDCCBoygAwIBAgIJALuqnw6CQXyQMA0GCSqGSIb3DQEBBQUAMIHgMQswCQYD\n" +
@@ -257,10 +258,14 @@ namespace WacomWebSocketService.PDF
          * 
          * 
          */
-        public static void signPDF(DocumentData doc, Dictionary<String,String> metadata)
+        public static void signPDF(DocumentData doc, String metadata, GraphSign sign, Signer signer)
         {
             ILog Log;
             Log = LogManager.GetLogger(Properties.Settings.Default.logName);
+            if (!File.Exists(doc.Docsignedpath /*+ "-signed.pdf"*/))
+            {
+                File.Copy(doc.Docpath, doc.Docsignedpath);
+            }
             try
             {
                 PdfReader reader = new PdfReader(doc.Docsignedpath);
@@ -277,16 +282,22 @@ namespace WacomWebSocketService.PDF
                 AsymmetricKeyParameter pk = readPrivateKey();
                 stp.Writer.CloseStream = false;
                 LtvVerification v = stp.LtvVerification;
-                AcroFields af = stp.AcroFields;
+                //AcroFields af = stp.AcroFields;
                 Log.Debug(String.Format("Adding metadata for doc {0}", doc.Docname));
-                stp.MoreInfo = metadata;
-                foreach (String sigName in af.GetSignatureNames()) 
-                {                   
-                    v.AddVerification(sigName, new OcspClientBouncyCastle(), new CrlClientOffline(null), LtvVerification.CertificateOption.WHOLE_CHAIN, LtvVerification.Level.OCSP_CRL, LtvVerification.CertificateInclusion.NO);
-                }
+                //stp.MoreInfo = metadata;
+ //               foreach (String sigName in af.GetSignatureNames()) 
+ //               {                   
+ //                   v.AddVerification(sigName, new OcspClientBouncyCastle(), new CrlClientOffline(null), LtvVerification.CertificateOption.WHOLE_CHAIN, LtvVerification.Level.OCSP_CRL, LtvVerification.CertificateInclusion.NO);
+//                }
                 PdfSignatureAppearance sap = stp.SignatureAppearance;
-                sap.Reason = "";
+                //sap.SignatureRenderingMode = PdfSignatureAppearance.RenderingMode.DESCRIPTION;
+                sap.Reason = metadata;
                 sap.Location = "";
+                sign.Image.MakeTransparent();
+                sap.Image = iTextSharp.text.Image.GetInstance(sign.Image,  System.Drawing.Imaging.ImageFormat.Png);
+                sap.Layer2Text = "";
+                
+
                 //Preserve some space for the contents
                 int contentEstimated = 15000;
                 Dictionary<PdfName, int> exc = new Dictionary<PdfName, int>();
@@ -302,6 +313,8 @@ namespace WacomWebSocketService.PDF
                 //RSACryptoServiceProvider crypt = (RSACryptoServiceProvider)cert.PrivateKey;
                 Log.Debug(String.Format("Dreating signature for doc {0}", doc.Docname));
                 IExternalSignature signature = new PrivateKeySignature(pk, DigestAlgorithms.SHA512);
+                sap.Layer2Text = "Huella: "+signature.GetHashCode();
+                sap.SetVisibleSignature(new Rectangle(signer.X, signer.Y, 200, 200), signer.Page, signer.Nombre+index);
                 MakeSignature.SignDetached(sap, signature, chain, null, null, tsc, 0, CryptoStandard.CMS);
                 Log.Debug(String.Format("Closing file for doc {0}", doc.Docname));
                 stp.Close();
@@ -317,6 +330,75 @@ namespace WacomWebSocketService.PDF
                 Log.Error("DocumentException", dex);
             }
         }
+
+
+
+        public static void signPDF_old(DocumentData doc, Dictionary<String, String> metadata)
+        {
+            ILog Log;
+            Log = LogManager.GetLogger(Properties.Settings.Default.logName);
+            try
+            {
+                PdfReader reader = new PdfReader(doc.Docsignedpath);
+                if (File.Exists(doc.Docsignedpath + "-signed.pdf"))
+                    File.Delete(doc.Docsignedpath + "-signed.pdf");
+                FileStream fos = new FileStream(doc.Docsignedpath + "-signed.pdf", FileMode.CreateNew, FileAccess.Write);
+
+                doc.Docsignedpath = doc.Docsignedpath + "-signed.pdf";
+                Log.Debug(String.Format("Creating Stamper for doc {0}", doc.Docname));
+                PdfStamper stp = PdfStamper.CreateSignature(reader, fos, '\x002', null, true);
+                Log.Debug(String.Format("Creating Certificate for doc {0}", doc.Docname));
+                Org.BouncyCastle.X509.X509Certificate[] chain = crearCertificado();
+                Log.Debug(String.Format("Reading private key for doc {0}", doc.Docname));
+                AsymmetricKeyParameter pk = readPrivateKey();
+                stp.Writer.CloseStream = false;
+                LtvVerification v = stp.LtvVerification;
+                AcroFields af = stp.AcroFields;
+                Log.Debug(String.Format("Adding metadata for doc {0}", doc.Docname));
+                stp.MoreInfo = metadata;
+                foreach (String sigName in af.GetSignatureNames())
+                {
+                    v.AddVerification(sigName, new OcspClientBouncyCastle(), new CrlClientOffline(null), LtvVerification.CertificateOption.WHOLE_CHAIN, LtvVerification.Level.OCSP_CRL, LtvVerification.CertificateInclusion.NO);
+                }
+                PdfSignatureAppearance sap = stp.SignatureAppearance;
+                sap.Reason = "";
+                sap.Location = "";
+                //Preserve some space for the contents
+                int contentEstimated = 15000;
+                Dictionary<PdfName, int> exc = new Dictionary<PdfName, int>();
+                exc.Add(PdfName.CONTENTS, (contentEstimated * 2 + 2));
+                //Add timestamp
+
+                Log.Debug(String.Format("Adding timestamp for doc {0}", doc.Docname));
+                TSAClientBouncyCastle tsc = new TSAClientBouncyCastle(Properties.Settings.Default.tsaUrl, Properties.Settings.Default.tsaUser, Properties.Settings.Default.tsaPass, contentEstimated, DigestAlgorithms.SHA512);
+                // Creating the signature
+                //LtvTimestamp.Timestamp(sap, tsc, null);
+                //Org.BouncyCastle.Crypto.BouncyCastleDigest messageDigest = MessageDigest.getInstance("SHA1");
+                //IExternalDigest digest = new Org.BouncyCastle.Crypto.BouncyCastleDigest();
+                //RSACryptoServiceProvider crypt = (RSACryptoServiceProvider)cert.PrivateKey;
+                Log.Debug(String.Format("Dreating signature for doc {0}", doc.Docname));
+                IExternalSignature signature = new PrivateKeySignature(pk, DigestAlgorithms.SHA512);
+                MakeSignature.SignDetached(sap, signature, chain, null, null, tsc, 0, CryptoStandard.CMS);
+                Log.Debug(String.Format("Closing file for doc {0}", doc.Docname));
+                stp.Close();
+                fos.Close();
+                reader.Close();
+            }
+            catch (IOException ex)
+            {
+                Log.Error("IOException", ex);
+            }
+            catch (DocumentException dex)
+            {
+                Log.Error("DocumentException", dex);
+            }
+        }
+
+
+
+
+
+
         /**
          * @Method
          * @Params

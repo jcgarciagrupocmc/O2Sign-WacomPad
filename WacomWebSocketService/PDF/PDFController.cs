@@ -83,7 +83,7 @@ namespace WacomWebSocketService.PDF
         {
             bool result = false;
             bool insertedSign = false;
-            if (this.open(source))
+ /*           if (this.open(source))
             {
                 Dictionary<String, String> hMap = this.reader.Info;
                 String keywords = "";
@@ -114,22 +114,87 @@ namespace WacomWebSocketService.PDF
                     }
                         
                 }
+  * */
+            insertedSign = true;
                 if (insertedSign)
                 {
-                    this.Log.Debug("Graph Sign inserted correctly, starting PAdES process");
+                //    this.Log.Debug("Graph Sign inserted correctly, starting PAdES process");
                     //Do PAdES
-                    this.close();
-                    DigitalSignUtils.signPDF(source, hMap);
+                //    this.close();                    
+                    DigitalSignUtils.signPDF(source, metadata, sign,signer);
                     this.Log.Debug("Moving files");
                     if(File.Exists(source.Docpath+"-signed.pdf"))
                         File.Delete(source.Docpath+"-signed.pdf");
                     File.Copy(source.Docsignedpath, source.Docpath + "-signed.pdf");
                     result = true;
                 }
-            }            
+     //       }            
+    //        this.close();
+            return result;
+        }
+
+
+        /**
+           * @Method Method that inserts the GraphSign in the pdf document and call for signing it
+           * @Params DocumentData source document to be signed
+           * @Params GraphSign sign Image and metadata about the Graphical Sign
+           * @Params signer data
+           * @Return true if the document is correctly signed, false if something wrong
+           */
+        public bool doSignature_old(DocumentData source, GraphSign sign, string metadata, Signer signer)
+        {
+            bool result = false;
+            bool insertedSign = false;
+            if (this.open(source))
+            {
+                Dictionary<String, String> hMap = this.reader.Info;
+                String keywords = "";
+                hMap.TryGetValue("Keywords", out keywords);
+                keywords += metadata + Properties.Settings.Default.stringSeparator;
+                this.Log.Debug("Keywords length " + keywords.Length);
+                hMap.Remove("Keywords");
+                hMap.Add("Keywords", keywords);
+                //Copy PDF
+                this.Log.Debug("Starting PDF copy");
+                for (int i = 1; i <= reader.NumberOfPages; i++)
+                {
+                    doc.SetPageSize(reader.GetPageSize(i));
+                    doc.NewPage();
+                    PdfContentByte cb = writer.DirectContent;
+                    PdfImportedPage importedPage = writer.GetImportedPage(reader, i);
+
+                    int rotation = reader.GetPageRotation(i);
+                    if (rotation == 90 || rotation == 270)
+                        cb.AddTemplate(importedPage, 0, -1.0F, 1.0F, 0, 0, reader.GetPageSizeWithRotation(i).Height);
+                    else
+                        cb.AddTemplate(importedPage, 1.0F, 0, 0, 1.0F, 0, 0);
+                    //Insert Graph image on coordenates
+                    if (i == signer.Page)
+                    {
+                        this.Log.Debug(String.Format("Trying to insert graph sign in Page {0}, x={1}, y={2}", signer.Page, signer.X, signer.Y));
+                        insertedSign = this.insertGraphSign(sign, cb, signer.X, signer.Y);
+                    }
+
+                }
+                if (insertedSign)
+                {
+                    this.Log.Debug("Graph Sign inserted correctly, starting PAdES process");
+                    //Do PAdES
+                    this.close();
+                    //DigitalSignUtils.signPDF_old(source, hMap, sign);
+                    this.Log.Debug("Moving files");
+                    if (File.Exists(source.Docpath + "-signed.pdf"))
+                        File.Delete(source.Docpath + "-signed.pdf");
+                    File.Copy(source.Docsignedpath, source.Docpath + "-signed.pdf");
+                    result = true;
+                }
+            }
             this.close();
             return result;
         }
+
+
+
 
         /**
          * @Method insert Sign Image in coordenates
