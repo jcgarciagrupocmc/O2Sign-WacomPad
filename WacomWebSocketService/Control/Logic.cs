@@ -19,6 +19,7 @@ namespace WacomWebSocketService.Control
         private WacomPad.WacomPadController padController;
         private PDF.PDFController pdfController;
         private WebScoketServer.SuperSocketController wsController;
+        private WebScoketServer.SecureSuperSocketController wssController;
         private WSClient.RestController restController;
         private static Logic instance;
         private ILog Log;
@@ -77,7 +78,20 @@ namespace WacomWebSocketService.Control
             this.padController = new WacomPad.WacomPadController();
             this.pdfController = new PDF.PDFController();
             this.restController = new WSClient.RestController(Properties.Settings.Default.host);
-            this.wsController = new WebScoketServer.SuperSocketController();
+            switch (Properties.Settings.Default.WebSocketParamater)
+            {
+                case 0:
+                    this.wsController = new WebScoketServer.SuperSocketController();
+                    this.wssController = new WebScoketServer.SecureSuperSocketController();
+                    break;
+                case 1:
+                    this.wssController = new WebScoketServer.SecureSuperSocketController();
+                    break;
+                case 2:
+                    this.wsController = new WebScoketServer.SuperSocketController();
+                    break;
+            }
+            
             this.Log = LogManager.GetLogger(Properties.Settings.Default.logName);
         }
         /**
@@ -85,20 +99,22 @@ namespace WacomWebSocketService.Control
          */
         public void onStart()
         {
-
-#if DEBUG
-            if (padController.checkPadConnected())
+            switch (Properties.Settings.Default.WebSocketParamater)
             {
-                this.wsController.open();
-                System.Threading.Thread.Sleep(System.Threading.Timeout.Infinite);
-            } 
-#else
-            
-            this.wsController.open();
+                case 0:
+                    this.wsController.open();
+                    this.wssController.open();
+                    break;
+                case 1:
+                    this.wssController.open();
+                    break;
+                case 2:
+                    this.wsController.open();
+                    break;
+            }
             Log.Debug("System goes to sleep");
             System.Threading.Thread.Sleep(System.Threading.Timeout.Infinite);
             //this.wsController.open();
-#endif
         }
         /**
          * @Method parses the newoperation json recieved from REST WS and gets all the operation documents saving them temporally on disk
@@ -153,14 +169,14 @@ namespace WacomWebSocketService.Control
                 String s = Parser.serializeObject(signers);
                 Log.Debug(s);
                 if (doc.documentHasBeenSigned())
-                    return Parser.serializeObject(this.wsController.createFileResponse(ControlTools.fileToBase64(doc.Docsignedpath), s));
+                    return Parser.serializeObject(WebScoketServer.GenericSSController.createFileResponse(ControlTools.fileToBase64(doc.Docsignedpath), s));
                 else
-                    return Parser.serializeObject(this.wsController.createFileResponse(ControlTools.fileToBase64(doc.Docpath), s));
+                    return Parser.serializeObject(WebScoketServer.GenericSSController.createFileResponse(ControlTools.fileToBase64(doc.Docpath), s));
             }
             else
             {
                 Log.Error("Missed document " + uuid);
-                return Parser.serializeObject(this.wsController.createErrorResponse());
+                return Parser.serializeObject(WebScoketServer.GenericSSController.createErrorResponse());
             }
         }
 
@@ -178,12 +194,12 @@ namespace WacomWebSocketService.Control
                 List<Signer> signers = doc.Docmetadata;
                 String s = Parser.serializeObject(signers);
                 Log.Debug(s);
-                return Parser.serializeObject(this.wsController.createFileResponse(ControlTools.fileToBase64(doc.Docsignedpath),s));
+                return Parser.serializeObject(WebScoketServer.GenericSSController.createFileResponse(ControlTools.fileToBase64(doc.Docsignedpath),s));
             }
             else
             {
                 Log.Error("Missed document " + uuid);
-                return Parser.serializeObject(this.wsController.createErrorResponse());
+                return Parser.serializeObject(WebScoketServer.GenericSSController.createErrorResponse());
             }
         }
         /**
@@ -242,11 +258,11 @@ namespace WacomWebSocketService.Control
             DocumentData doc = this.getDocuemnt(uuid);
             if (this.signPdf(doc,signer))
             {
-                return Parser.serializeObject(this.wsController.createSignedFileResponse());
+                return Parser.serializeObject(WebScoketServer.GenericSSController.createSignedFileResponse());
             }
             else
             {
-                return Parser.serializeObject(this.wsController.createErrorResponse("Sign Cancelled by User"));
+                return Parser.serializeObject(WebScoketServer.GenericSSController.createErrorResponse("Sign Cancelled by User"));
             }
         }
         /**
@@ -319,14 +335,14 @@ namespace WacomWebSocketService.Control
                     case (int)CommandType.Register:                        
                         if (padController.checkPadConnected())
                         {
-                            result = Parser.serializeObject(this.wsController.createRegisterResponse());
+                            result = Parser.serializeObject(WebScoketServer.GenericSSController.createRegisterResponse());
                             Log.Debug(result);
                             return result;
                         }
                         else
                         {
                             Log.Info("Wacom Pad not Connected");
-                            result = Parser.serializeObject(this.wsController.createErrorResponse());
+                            result = Parser.serializeObject(WebScoketServer.GenericSSController.createErrorResponse());
                             Log.Debug(result);
                             return result;
                         }
@@ -341,21 +357,21 @@ namespace WacomWebSocketService.Control
                                 Log.Debug("JSON Recieved from PIE: " + jsonData);
                                 this.operation = this.newOperation(jsonData);
                                 String s = Parser.serializeObject(operation);
-                                result = Parser.serializeObject(this.wsController.createOperationListResponse(jsonData, s));
+                                result = Parser.serializeObject(WebScoketServer.GenericSSController.createOperationListResponse(jsonData, s));
                                 Log.Debug(result);
                                 return result;
                             }
                             else
                             {
                                 Log.Error("Error no data recieved from PIE");
-                                result = Parser.serializeObject(this.wsController.createErrorResponse());
+                                result = Parser.serializeObject(WebScoketServer.GenericSSController.createErrorResponse());
                                 Log.Debug(result);
                                 return result;
                             }
                                 
                         }
                         else
-                            return Parser.serializeObject(this.wsController.createErrorResponse());
+                            return Parser.serializeObject(WebScoketServer.GenericSSController.createErrorResponse());
                     //Processing getUnsignedFile message from websocket
                     case (int)CommandType.GetFile:
                         if (obj.idFile != null)
@@ -367,7 +383,7 @@ namespace WacomWebSocketService.Control
                         else
                         {
                             Log.Error("Incorrect Parameter");
-                            result = Parser.serializeObject(this.wsController.createErrorResponse());
+                            result = Parser.serializeObject(WebScoketServer.GenericSSController.createErrorResponse());
                             Log.Debug(result);
                             return result;
                         }
@@ -384,7 +400,7 @@ namespace WacomWebSocketService.Control
                         else
                         {
                             Log.Error("Incorrect Parameter");
-                            result = Parser.serializeObject(this.wsController.createErrorResponse());
+                            result = Parser.serializeObject(WebScoketServer.GenericSSController.createErrorResponse());
                             Log.Debug(result);
                             return result;
                         }
@@ -400,7 +416,7 @@ namespace WacomWebSocketService.Control
                         else
                         {
                             Log.Error("Incorrect Parameter");
-                            result = Parser.serializeObject(this.wsController.createErrorResponse());
+                            result = Parser.serializeObject(WebScoketServer.GenericSSController.createErrorResponse());
                             Log.Debug(result);
                             return result;
                         }
@@ -409,13 +425,13 @@ namespace WacomWebSocketService.Control
                         {
                             if (this.uploadSignedOperation(this.operation))
                             {
-                                result = Parser.serializeObject(this.wsController.createOperationOKResponse());
+                                result = Parser.serializeObject(WebScoketServer.GenericSSController.createOperationOKResponse());
                                 Log.Debug(result);
                                 return result;
                             }
                             else
                             {
-                                result = Parser.serializeObject(this.wsController.createRemainingSignersResponse());
+                                result = Parser.serializeObject(WebScoketServer.GenericSSController.createRemainingSignersResponse());
                                 Log.Debug(result);
                                 return result;
                             }
@@ -424,18 +440,30 @@ namespace WacomWebSocketService.Control
                         else
                         {
                             Log.Error("Incorrect Parameter");
-                            return Parser.serializeObject(this.wsController.createErrorResponse());
+                            return Parser.serializeObject(WebScoketServer.GenericSSController.createErrorResponse());
                         }
                     case (int)CommandType.CancelOperation:
                         if (obj.idFile != null)
                         {
-                            return Parser.serializeObject(this.wsController.createOperationOKResponse());
+                            return Parser.serializeObject(WebScoketServer.GenericSSController.createOperationOKResponse());
                         }
                         else
                         {
                             Log.Error("Incorrect Parameter");
-                            return Parser.serializeObject(this.wsController.createErrorResponse());
+                            return Parser.serializeObject(WebScoketServer.GenericSSController.createErrorResponse());
                         }
+                    case (int)CommandType.Points:
+                        if (obj.idFile != null)
+                        {
+                            this.padController.MinPoints = (int)obj.idFile;
+                            return Parser.serializeObject(WebScoketServer.GenericSSController.createRegisterResponse());
+                        }
+                        else
+                        {
+                            Log.Error("Incorrect Parameter");
+                            return Parser.serializeObject(WebScoketServer.GenericSSController.createErrorResponse());
+                        }
+                        
                             
                 }
             }
@@ -444,9 +472,9 @@ namespace WacomWebSocketService.Control
                 Log.Error(e.Message);
                 Log.Error(e.StackTrace);
                 if(e.InnerException!=null)
-                    throw new IncorrectMessageException(e, Parser.serializeObject(this.wsController.createErrorResponse(e.Message,e.InnerException.Message)));
+                    throw new IncorrectMessageException(e, Parser.serializeObject(WebScoketServer.GenericSSController.createErrorResponse(e.Message,e.InnerException.Message)));
                 else
-                    throw new IncorrectMessageException(e, Parser.serializeObject(this.wsController.createErrorResponse(e.Message)));
+                    throw new IncorrectMessageException(e, Parser.serializeObject(WebScoketServer.GenericSSController.createErrorResponse(e.Message)));
             }
             throw new NotImplementedException();
         }

@@ -38,5 +38,8 @@
     <Setting Name="imageSize" Type="System.Double" Scope="Application">
       <Value Profile="(Default)">200</Value>
     </Setting>
+    <Setting Name="WebSocketParamater" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

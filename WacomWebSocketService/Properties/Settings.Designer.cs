@@ -130,5 +130,14 @@ namespace WacomWebSocketService.Properties {
                 return ((double)(this["imageSize"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int WebSocketParamater {
+            get {
+                return ((int)(this["WebSocketParamater"]));
+            }
+        }
     }
 }

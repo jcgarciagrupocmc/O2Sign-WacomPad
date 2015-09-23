@@ -10,6 +10,17 @@ namespace WacomWebSocketService.WacomPad
      */
     public class WacomPadController
     {
+        private int minPoints;
+
+        public int MinPoints
+        {
+            get { return minPoints; }
+            set { minPoints = value; }
+        }
+        public WacomPadController()
+        {
+            this.minPoints = 100;
+        }
         /**
          * @Method calls the Wacom Pad UI for signing and returns the sign data
          * @Return GraphSign if confirmed, null if cancel by the user
@@ -26,7 +37,7 @@ namespace WacomWebSocketService.WacomPad
                 wgssSTU.IUsbDevice usbDevice = usbDevices[0]; // select a device
 
                 WacomPadForm.PresingString = String.Format(Properties.Settings.Default.presingModel, signer.Nombre, signer.Nif);
-                WacomPadForm demo = new WacomPadForm(usbDevice);
+                WacomPadForm demo = new WacomPadForm(usbDevice,this.minPoints);
                 demo.Title = String.Format(Properties.Settings.Default.presingModel, signer.Nombre, signer.Nif);
                 //WacomPadUtils.BringToFrontCustom(demo);
                 demo.ShowDialog();

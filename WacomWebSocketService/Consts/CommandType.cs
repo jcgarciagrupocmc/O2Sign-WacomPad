@@ -26,6 +26,8 @@ namespace WacomWebSocketService.Consts
         //Message Type for sending a completed operation to the PIE, parameter required idoperation
         UploadOperation = 6,
         //Message Type for cancelling current operation, parameter required idoperation
-        CancelOperation = 7
+        CancelOperation = 7,
+        //Message Type for setting the min valid num points in graphsign
+        Points = 8
     }
 }

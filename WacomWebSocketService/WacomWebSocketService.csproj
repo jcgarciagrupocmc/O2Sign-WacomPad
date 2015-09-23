@@ -53,6 +53,9 @@
   <PropertyGroup>
     <ApplicationIcon>logo_o2sign_15x5_256px.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Interop.wgssSTU">
       <HintPath>..\..\..\WacomSDKSamples\STU-SDK-Samples\csharp\DemoButtons (save option)\Interop.wgssSTU.dll</HintPath>
@@ -166,6 +169,7 @@
     </None>
     <EmbeddedResource Include="caser_firma_es.key" />
     <EmbeddedResource Include="caser_firma_es.cert" />
+    <None Include="galeonssl.pfx" />
     <None Include="log4net.config">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

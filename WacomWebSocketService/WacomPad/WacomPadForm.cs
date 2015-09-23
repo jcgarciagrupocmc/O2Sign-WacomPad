@@ -14,6 +14,9 @@ namespace WacomWebSocketService.WacomPad
         private wgssSTU.IInformation m_information;
 
         private Button presignText;
+        private int minPoints;
+
+        private bool semaphore;
 
         private static String presingString;
 
@@ -113,14 +116,37 @@ namespace WacomWebSocketService.WacomPad
 
         private void btnOk_Click(object sender, EventArgs e)
         {
-            // Save the image.
-            SaveImage();
-
-            m_tablet.writeImage((byte)m_encodingMode, m_bitmapData);
-            this.Invoke((MethodInvoker)delegate
+            if (semaphore)
             {
-                this.Close();
-            });
+                semaphore = false;
+                if (this.sign != null)
+                {
+                    if (this.sign.Points.Count > minPoints)
+                    {
+                        // Save the image.
+                        SaveImage();
+
+                        m_tablet.writeImage((byte)m_encodingMode, m_bitmapData);
+                        this.Invoke((MethodInvoker)delegate
+                        {
+                            this.Close();
+                        });
+                    }
+                    else
+                    {
+                        MessageBox.Show("Firma demasiado corta", "Alerta");
+                        this.sign.ClearPoints();
+                        this.clearScreen();
+
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Firma demasiado corta", "Alerta");
+                }
+                semaphore = true;
+
+            }
             //this.Hide();
         }
 
@@ -148,8 +174,11 @@ namespace WacomWebSocketService.WacomPad
                 clearScreen();
         }
 
-        public WacomPadForm(wgssSTU.IUsbDevice usbDevice)
+        public WacomPadForm(wgssSTU.IUsbDevice usbDevice, int points)
         {
+
+            semaphore = true;
+            this.minPoints = points;
             if (presingString != null)
             {
                 presignText.Text = presingString;

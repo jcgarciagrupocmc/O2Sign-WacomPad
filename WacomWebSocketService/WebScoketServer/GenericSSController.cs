@@ -11,13 +11,77 @@ namespace WacomWebSocketService.WebScoketServer
 {
     public class GenericSSController
     {
+        protected WebSocketServer appServer;
+        protected ILog Log;
 
+        /**
+         * @Method Open WebSocket connection
+         * @Return true if OK, false otherwise
+         */
+        public bool open()
+        {
+            if (this.appServer != null)
+            {
+                if (!this.appServer.Start())
+                {
+                    Log.Error("Error while opening Socket");
+                    return false;
+                }
+                else
+                {
+                    Log.Debug("socket opened");
+                    return true;
+                }
+            }
+            else
+            {
+                Log.Debug("Already exists a server");
+                return false;
+            }
 
+        }
+
+        /**
+         * @Method Close the WebSocket connection
+         * @Return true if OK, false otherwise
+         */
+        public bool close()
+        {
+            if (this.appServer != null)
+            {
+                this.appServer.Stop();
+                return true;
+            }
+            else
+            {
+                this.Log.Error("Error while closing Socket");
+                return false;
+            }
+        }
+
+        /**
+         * @Method
+         * @Params
+         * @Params
+         */
+        internal void appServer_NewMessageReceived(WebSocketSession session, String message)
+        {
+            try
+            {
+                Log.Debug("Message Recieved " + message);
+                session.Send(Control.Logic.getInstance().recieveWebSMessage(message));
+            }
+            catch (IncorrectMessageException ex)
+            {
+                Log.Error("IncorrectMessageException", ex);
+                session.Send(ex.response);
+            }
+        }
         /**
          * @Method Create a new WebSocket Response of type Connection
          * @Return WebSocket Response Entity
          */
-        public Response createRegisterResponse()
+        public static Response createRegisterResponse()
         {
             return new Response { Type = ResponseType.Connection };
         }
@@ -26,7 +90,7 @@ namespace WacomWebSocketService.WebScoketServer
          * @Params Response json message
          * @Return WebSocket Response Entity
          */
-        public Response createErrorResponse(String s)
+        public static Response createErrorResponse(String s)
         {
             return new Response { Type = ResponseType.Error, Data = new { s } };
         }
@@ -35,7 +99,7 @@ namespace WacomWebSocketService.WebScoketServer
          * @Params Response json message
          * @Return WebSocket Response Entity
          */
-        public Response createErrorResponse(String s, String s2)
+        public static Response createErrorResponse(String s, String s2)
         {
             return new Response { Type = ResponseType.Error, Data = new { s }, Data2 = s2 };
         }
@@ -43,7 +107,7 @@ namespace WacomWebSocketService.WebScoketServer
          * @Method Create a new WebSocket Response of type Error
          * @Return WebSocket Response Entity
          */
-        public Response createErrorResponse()
+        public static Response createErrorResponse()
         {
             return new Response { Type = ResponseType.Error };
         }
@@ -51,7 +115,7 @@ namespace WacomWebSocketService.WebScoketServer
          * @Method Create a new WebSocket Response of type OperationOK for UploadOperation Command
          * @Return WebSocket Response Entity
          */
-        public Response createOperationOKResponse()
+        public static Response createOperationOKResponse()
         {
             return new Response { Type = ResponseType.OperationOK };
         }
@@ -60,7 +124,7 @@ namespace WacomWebSocketService.WebScoketServer
          * 
          * @Return WebSocket Response Entity
          */
-        public Response createOperationListResponse(String jsonObject)
+        public static Response createOperationListResponse(String jsonObject)
         {
             return new Response { Type = ResponseType.OperationList, Data = jsonObject };
         }
@@ -69,7 +133,7 @@ namespace WacomWebSocketService.WebScoketServer
          * 
          * @Return WebSocket Response Entity
          */
-        public Response createOperationListResponse(String jsonObject, String operation)
+        public static Response createOperationListResponse(String jsonObject, String operation)
         {
             return new Response { Type = ResponseType.OperationList, Data = jsonObject, Data2 = operation };
         }
@@ -78,7 +142,7 @@ namespace WacomWebSocketService.WebScoketServer
          * 
          * @Return WebSocket Response Entity
          */
-        public Response createFileResponse(String file, String signers)
+        public static Response createFileResponse(String file, String signers)
         {
             return new Response { Type = ResponseType.File, Data = file, Data2 = signers };
         }
@@ -86,7 +150,7 @@ namespace WacomWebSocketService.WebScoketServer
          * @Method Create a new WebSocket Response of type SignedFile
          * @Return WebSocket Response Entity
          */
-        public Response createSignedFileResponse()
+        public static Response createSignedFileResponse()
         {
             return new Response { Type = ResponseType.SignedFile };
         }
@@ -94,7 +158,7 @@ namespace WacomWebSocketService.WebScoketServer
          * @Method Create a new WebSocket Response of type OperationCanceled for CancelOperation Command
          * @Return WebSocket Response Entity
          */
-        public Response createOperationCanceledResponse()
+        public static Response createOperationCanceledResponse()
         {
             return new Response { Type = ResponseType.OperationCanceled };
         }
@@ -102,7 +166,7 @@ namespace WacomWebSocketService.WebScoketServer
          * @Method Create a new WebSocket Response of type RemainingSigners for UploadOperation Command
          * @Return WebSocket Response Entity 
          */
-        internal object createRemainingSignersResponse()
+        public static Response createRemainingSignersResponse()
         {
             return new Response { Type = ResponseType.RemainingSigners };
         }
