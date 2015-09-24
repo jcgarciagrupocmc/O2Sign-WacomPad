@@ -9,12 +9,18 @@ using System.Drawing;
 namespace WacomWebSocketService.Entities
 {
 
-    //TODO Implement this entity to store the graphometric signature from Wacom Pad
+    //This entity stores the graphometric signature from Wacom Pad
     public class GraphSign
     {
         private int maxOrder;
         private Bitmap image;
+        private int pointsWithPressure;
 
+        public int PointsWithPressure
+        {
+            get { return pointsWithPressure; }
+            set { pointsWithPressure = value; }
+        }
         public Bitmap Image
         {
             get { return image; }
@@ -32,12 +38,17 @@ namespace WacomWebSocketService.Entities
         {
             this.points = new List<BioSignPoint>();
             this.maxOrder = 0;
+            this.pointsWithPressure = 0;
         }
 
         public void addPoint(BioSignPoint point)
         {
             point.Order = this.maxOrder;
             maxOrder++;
+            if (point.Pressure > 0)
+            {
+                this.pointsWithPressure++;
+            }
             this.points.Add(point);
         }
 
@@ -45,6 +56,7 @@ namespace WacomWebSocketService.Entities
         {
             this.points.Clear();
             this.maxOrder = 0;
+            this.pointsWithPressure = 0;
         }
     }
 }

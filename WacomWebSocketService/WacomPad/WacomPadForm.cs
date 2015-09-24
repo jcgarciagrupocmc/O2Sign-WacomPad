@@ -121,7 +121,7 @@ namespace WacomWebSocketService.WacomPad
                 semaphore = false;
                 if (this.sign != null)
                 {
-                    if (this.sign.Points.Count > minPoints)
+                    if (this.sign.PointsWithPressure > minPoints)
                     {
                         // Save the image.
                         SaveImage();

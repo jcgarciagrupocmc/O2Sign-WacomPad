@@ -169,7 +169,9 @@
     </None>
     <EmbeddedResource Include="caser_firma_es.key" />
     <EmbeddedResource Include="caser_firma_es.cert" />
-    <None Include="galeonssl.pfx" />
+    <None Include="galeonssl.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="log4net.config">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

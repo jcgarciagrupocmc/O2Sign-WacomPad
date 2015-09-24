@@ -27,6 +27,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_14DD0E29E1A748648F9DB4ED7DAFE6D8"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_1B55A7F9895BC680F6A22C0CE81415A9"
         "OwnerKey" = "8:_030A8EB96A704B528E596317AABE9163"
         "MsmSig" = "8:_UNDEFINED"
@@ -111,6 +117,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_90329D568E0B4E2C9F7DF4E7BEA0CB49"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_A8D776BAA5BF442586474E81C1B5F414"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -135,6 +147,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_E12F746CA67948C88915E9C415CF8FC1"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_F72CDF41179CDDE6F6AC49852EBEB491"
         "OwnerKey" = "8:_030A8EB96A704B528E596317AABE9163"
         "MsmSig" = "8:_UNDEFINED"
@@ -143,12 +161,6 @@
         {
         "MsmKey" = "8:_F72CDF41179CDDE6F6AC49852EBEB491"
         "OwnerKey" = "8:_1BD0B54D990ECA9CFB69514F94CF8266"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_C4D4F4FA0FEACBA5D9A949F1666FA1E2"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -209,6 +221,12 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_F72CDF41179CDDE6F6AC49852EBEB491"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_C4D4F4FA0FEACBA5D9A949F1666FA1E2"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -283,6 +301,20 @@
     {
         "CustomAction"
         {
+            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_1472662573784AF6B9F8C0647E6334CA"
+            {
+            "Name" = "8:setup.vbs"
+            "Condition" = "8:"
+            "Object" = "8:_E12F746CA67948C88915E9C415CF8FC1"
+            "FileType" = "3:4"
+            "InstallAction" = "3:1"
+            "Arguments" = "8:"
+            "EntryPoint" = "8:"
+            "Sequence" = "3:2"
+            "Identifier" = "8:_C3DD87A8_DD6F_440A_A8B3_E07EE1E4BF1B"
+            "InstallerClass" = "11:FALSE"
+            "CustomActionData" = "8:"
+            }
             "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_5B384DC886E54AE4B6CB9AB73AF9C72E"
             {
             "Name" = "8:Primary output from WacomWebSocketService (Active)"
@@ -363,6 +395,26 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_14DD0E29E1A748648F9DB4ED7DAFE6D8"
+            {
+            "SourcePath" = "8:setup2.vbs"
+            "TargetName" = "8:setup2.vbs"
+            "Tag" = "8:"
+            "Folder" = "8:_5AE3C2E65ADD42A88166DDCFC1152727"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:TRUE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_1B55A7F9895BC680F6A22C0CE81415A9"
@@ -551,6 +603,26 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_90329D568E0B4E2C9F7DF4E7BEA0CB49"
+            {
+            "SourcePath" = "8:setup.cmd"
+            "TargetName" = "8:setup.cmd"
+            "Tag" = "8:"
+            "Folder" = "8:_5AE3C2E65ADD42A88166DDCFC1152727"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A8D776BAA5BF442586474E81C1B5F414"
             {
             "SourcePath" = "8:..\\WacomWebSocketService\\log4net.config"
@@ -651,6 +723,26 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E12F746CA67948C88915E9C415CF8FC1"
+            {
+            "SourcePath" = "8:setup.vbs"
+            "TargetName" = "8:setup.vbs"
+            "Tag" = "8:"
+            "Folder" = "8:_5AE3C2E65ADD42A88166DDCFC1152727"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:TRUE"
+            "Hidden" = "11:TRUE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_F72CDF41179CDDE6F6AC49852EBEB491"
@@ -774,7 +866,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:O2Sign"
         "ProductCode" = "8:{60418C05-E6D0-464D-BB78-7773DC276E7C}"
-        "PackageCode" = "8:{254EEA10-54D6-45F6-AA43-6AE6087A2AD0}"
+        "PackageCode" = "8:{6542166A-7E60-44CA-BC36-F52ABA50725F}"
         "UpgradeCode" = "8:{F1D16494-D2E0-4B18-B5C7-E6FDC39CBCD1}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
